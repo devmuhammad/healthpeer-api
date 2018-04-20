@@ -3,12 +3,13 @@ const app         = require('express')()
       ,config     = require('./config')
       ,dbConfig   = require('./config/database.config')
       ,bodyParser = require('body-parser')
-      ,User       = require('./api/models/userModel')
+      ,User       = require('./api/models/userModel')       //import Models
       ,medicalInfo = require('./api/models/medicalInfoModel')
       ,consultHistory = require('./api/models/consultHistoryModel')
       ,consultInfo = require('./api/models/consultInfoModel')
-      ,userRouter = require('./api/routes/userRoute')  //import routes
+      ,userRouter = require('./api/routes/userRoute')         //import routes
       ,authRouter = require('./api/routes/authRoute')
+      ,consultantRoute = require('./api/routes/consultantRoute')
       ,middleware = require('./api/controller/verifyToken');
 
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -25,7 +26,7 @@ mongoose.connect(dbConfig.url, {
   const db = mongoose.connection;
   db.on('error', console.error.bind(console, 'connection error:'));
   db.on('open', () => { console.log(`Connected to db at ${dbConfig.url}`); }); 
-  console.log("Moh's connection")
+  console.log("Moh is connected")
 
 }).catch(err => {
   console.log('Could not connect to the database. Exiting now...');
@@ -36,6 +37,7 @@ mongoose.connect(dbConfig.url, {
 // Routes
 app.use("/user", userRouter);
 app.use("/auth", authRouter);
+app.use("/consultant", consultantRoute);
 
 
 app.listen(config.app.port);

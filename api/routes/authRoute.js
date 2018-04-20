@@ -19,5 +19,4 @@ const auth_controller = require('../controller/authController');
     router.post('/confirmresetpassword/:resetkey', auth_controller.resetPasswordFinal);//endpoint for password full reset POST
 
 
-
 module.exports = router;

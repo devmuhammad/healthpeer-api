@@ -65,6 +65,7 @@ exports.updateMedInfo = (function (req, res){
 
    User.findById(loggedInUser, function(err, usermed) {
     if (err) return res.status(500).json({status:"error", message:"DB ERROR "});
+    console.log(usermed)
     if (usermed.medicalInfo) {
       medicalInfo.findByIdAndUpdate(usermed.medicalInfo, newMedInfo,{new:true}, function(err,usermedupdate){
         if (err) return res.status(500).json({status:"error", message:"DB ERROR "});
