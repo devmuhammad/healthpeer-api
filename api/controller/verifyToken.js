@@ -13,4 +13,5 @@ const verifyToken = function (req, res, next) {
     next();
   });
 }
+
 module.exports = verifyToken;

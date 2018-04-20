@@ -27,7 +27,7 @@ mongoose.connect(dbConfig.url, {
   process.exit();
 });
       
-//app.use(middleware)
+app.use(['/user', '/medicalinfo'],middleware)
 // Routes
 app.use("/user", userRouter);
 app.use("/auth", authRouter);
