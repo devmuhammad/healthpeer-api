@@ -6,7 +6,7 @@ var Schema = mongoose.Schema
 
 
 var medicalInfoSchema = new Schema ({
-    
+        //_id:false,
         weight:{type:String, default:'60kg'},
         height:{type:String, default:'6ft2'},
         bloodGroup:{type:String,default:'O+'},

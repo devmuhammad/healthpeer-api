@@ -4,7 +4,7 @@ var verifyToken = require('../controller/verifyToken');
 
 // User Routes
     router.get('/getusers', user_controller.userslist); // endpoint for retrieving all users GET
-    router.post('/create', user_controller.createUser); //endpoint for creating new user POST
+    // router.post('/create', user_controller.createUser); //endpoint for creating new user POST
 
     router.get('/get/:userId', user_controller.userbyid);  //endpoint for retrieving single user by id GET
     router.put('/update/:userId', user_controller.updateuserProfile); //endpoint to update users profile  PUT
@@ -12,7 +12,5 @@ var verifyToken = require('../controller/verifyToken');
 
 //Medical Information Route
     router.post('/updatemedInfo', verifyToken, user_controller.updateMedInfo)
-
-
 
 module.exports = router;

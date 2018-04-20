@@ -45,5 +45,5 @@ app.use("/auth", authRouter);
 app.use("/consultant", consultantRoute);
 
 
-app.listen(6990);
+app.listen(config.app.port);
 console.log("App running on port "+config.app.port);

@@ -4,25 +4,6 @@
     consultHistory = mongoose.model('consultHistory')
     var verifyToken = require('./verifyToken');
     
-
- //Create New User Method
-
- exports.createUser = function (req, res){
-
-    var newUser = new User (req.body);
-    if (!newUser) return res.status(400).json({status:"error", message:"Empty or Incomplete Parameters for New User "});
-    
-    User.findOne ({ email : newUser.email }, function(err, user){
-       if (err) return res.status(500).json({status:"error", message:"DB ERROR"});
-       if (user) return res.status(401).json({status:"error", message:"Email already exist"}); 
-       
-       newUser.save( function (err, user){
-        if (err) return res.status(500).json({status:"error", message:"There was a problem adding the info to the DB"});
-        
-      res.status(200).json({status:"success", message:"Users added successfully",data:user});
-    })
- });
-};
     
  exports.userslist = function (req, res){
    
@@ -44,11 +25,32 @@
     });
 
  exports.updateuserProfile = function (req, res){
-    User.findByIdAndUpdate( req.params.userId, req.body, {new:true}, function(err,user){
-
+    let updtUser = new User(req.body) 
+    User.findById(updtUser.id, function(err, user){
       if (err) return res.status(500).json({status:"error", message:"There was a problem Updating user "});
+      if (!user) return res.status(404).json({status:"error", message:"user not found"});
       
-      res.status(200).json({status:"success", message:"user updated successfully",data:user});
+      if (user.accountType === 'consultant'){
+        User.schema.add({'speciality':{type:String}});
+        User.schema.add({'folioNumber':{type:String}});
+        User.schema.add({'yofPractice':{type:String}});
+        User.schema.add({'currentJob':{type:String}});
+        User.schema.add({'accountType':{type:String}});
+        User.findByIdAndUpdate( user._id, req.body, {new:true}, function(err,user){
+
+          if (err) return res.status(500).json({status:"error", message:"There was a problem Updating user "});
+          
+          res.status(200).json({status:"success", message:"user updated successfully",data:user});
+        });
+      } if(user.accountType === 'patient'){
+        User.findAndUpdate( req.params.userId, req.body, {new:true}, function(err,user){
+
+          if (err) return res.status(500).json({status:"error", message:"There was a problem Updating user "});
+          
+          res.status(200).json({status:"success", message:"user updated successfully",data:user});
+      })
+    }
+    
     });
   };
 
@@ -59,16 +61,20 @@
     res.status(200).json({status: "success", message: 'User successfully deleted' });
   });
 };
+
 exports.updateMedInfo = (function (req, res){
     var loggedInUser = userId
    newMedInfo = new medicalInfo(req.body) 
 
    User.findById(loggedInUser, function(err, usermed) {
-    if (err) return res.status(500).json({status:"error", message:"DB ERROR "});
-    console.log(usermed)
+    if (err) return res.status(500).json({status:"error", message:"DB find ERROR "});
+    
     if (usermed.medicalInfo) {
+      newMedInfo._id = usermed.medicalInfo
+      
       medicalInfo.findByIdAndUpdate(usermed.medicalInfo, newMedInfo,{new:true}, function(err,usermedupdate){
-        if (err) return res.status(500).json({status:"error", message:"DB ERROR "});
+        if (err) return res.status(500).json({status:"error", message:"DB update ERROR "});
+
         res.status(200).json({ status: "success", auth:true, message:"Medical Information Updated",data:usermedupdate});
       });
     }

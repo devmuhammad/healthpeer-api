@@ -8,7 +8,7 @@
     var verifyToken = require('./verifyToken');
     const uuidv4 = require('uuid/v4');
     const uuidv3 = require('uuid/v3');
-    
+    const {CREATE_USER} = require('../../services/pusherService');
    // this.mailer = mailer;
    
 
@@ -18,7 +18,7 @@ exports.login = function (req, res){
     
     User.findOne({ email: loginUser.email}, function(err, user){
         if (err) return res.status(500).json({status:"error", message:"DB_ERROR"});
-        if (!user) return res.status(401).json({status:"error", message:"User does not exist"});
+        if (!user) return res.status(401).json({status:"error", message:"Invalid User"});
         
         var passwordIsValid = bcrypt.compareSync( loginUser.password, user.password)
              if (!passwordIsValid) return res.status(401).json({ auth: false, token: null})
@@ -52,28 +52,59 @@ exports.signedHeader = (function (req, res){
      });
  
  //Sign Up/Register Method
-exports.register = function (req, res) {
-    var newUser = new User (req.body);
-    //console.log(newUser)
-    var hashedPassword = bcrypt.hashSync(newUser.password, 8);
-
-    User.findOne({ email: newUser.email}, function (err, user){
-        if (err) return res.status(500).json({status:"error", message:"DB_ERROR"});
-        if (user) return res.status(401).json({status:"error", message:"Email does not exist"});
+ exports.register = function (req, res){
+    if (req.body.accountType === 'patient')
+    {
+      User.schema.add({'accountType':{type:String}});
+      var newUser = new User (req.body);
+      var hashedPassword = bcrypt.hashSync(newUser.password, 8);
+  
+      if (!newUser) return res.status(400).json({status:"error", message:"Empty or Incomplete Parameters for New User "});
+      
+      User.findOne ({ email : newUser.email }, function(err, user){
+         if (err) return res.status(500).json({status:"error", message:"DB ERROR"});
+         if (user) return res.status(401).json({status:"error", message:"Email already exist"}); 
+         newUser.password = hashedPassword
         
-        newUser.password = hashedPassword
-        
-            newUser.save( function (err, user){
-                
-            if (err) return res.status(500).json({status:"error", message:"There was a problem registering the User"});
-            //create a token
-            var token = jwt.sign({ id : user._id }, config.app.secret, {
-                expiresIn: 86400 // expires in 24hours
-            })
-            res.status(200).json({ status:"success", auth:true, token: token });
-    });
-});
-};
+         newUser.save( function (err, user){
+          if (err) return res.status(500).json({status:"error", message:"There was a problem adding the info to the DB"});
+          
+           //create a token
+           var token = jwt.sign({ id : user._id }, config.app.secret, {
+            expiresIn: 86400 // expires in 24hours
+        })
+        CREATE_USER(user._id, function(res, err){
+            
+        })
+        res.status(200).json({status:"success", message:"Users added successfully",data:user});
+      })
+      
+   });
+  } else if (req.body.accountType === 'consultant'){
+      User.schema.add({'accountType':{type:String}});
+      
+      var newUser = new User (req.body);
+      var hashedPassword = bcrypt.hashSync(newUser.password, 8);
+      if (!newUser) return res.status(400).json({status:"error", message:"Empty or Incomplete Parameters for New User "});
+      
+      User.findOne ({ email : newUser.email }, function(err, user){
+         if (err) return res.status(500).json({status:"error", message:"DB ERROR"});
+         if (user) return res.status(401).json({status:"error", message:"Email already exist"}); 
+         
+         newUser.password = hashedPassword
+         newUser.save( function (err, user){
+          if (err) return res.status(500).json({status:"error", message:"There was a problem adding the info to the DB"});
+          
+           //create a token
+           var token = jwt.sign({ id : user._id }, config.app.secret, {
+            expiresIn: 86400 // expires in 24hours
+        })
+        res.status(200).json({status:"success", message:"Users added successfully",data:user});
+      })
+      
+   });
+  } else return res.status(500).json({status:"error", message:"DB ERROR"});
+  };
 
 exports.resetPassword = function (req, res){
     var emailUser = new User (req.body)
