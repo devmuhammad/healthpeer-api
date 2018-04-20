@@ -1,3 +1,4 @@
+
     var mongoose = require('mongoose')
     User = mongoose.model('User')
     var emailer = require('../../config/mailer')
@@ -23,7 +24,7 @@ exports.login = function (req, res){
              if (!passwordIsValid) return res.status(401).send({ auth: false, token: null})
         //create a token
         var token = jwt.sign({ id: user._id}, config.secret, {
-            expiresIn: 3600 // expires in 24hours
+            expiresIn: 3600 // expires in 1hour
         })
         res.status(200).send({ auth: true, token: token });
     });
@@ -34,6 +35,22 @@ exports.logout = function (){
     res.status(200).send({ auth: false, token: null });
 };
 
+// Get logged in User with token
+exports.signedHeader = (function (req, res){
+    var myUser 
+    
+   User.findById(userId,{ password:0 }, function (err, user) {
+         if (err) return res.status(500).send({message: "There was a problem finding the user."});
+         if (!user) return res.status(404).send({message:"No user found."});
+         
+         res.status(200).send({ auth:true, message:"User authorized" });
+         myUser = user.id;
+         
+     });
+      loggedUser = myUser
+       
+     });
+ 
  //Sign Up/Register Method
 exports.register = function (req, res) {
     var newUser = new User (req.body);
@@ -57,17 +74,6 @@ exports.register = function (req, res) {
     });
 });
 };
-// Get userId on each request
-exports.signedHeader = (verifyToken,function (req, res, next){
-       
-        User.findById(req.userId,{ password:0 }, function (err, user) {
-            if (err) return res.status(500).send("There was a problem finding the user.");
-            if (!user) return res.status(404).send("No user found.");
-            
-            res.status(200).send({ auth:true, message:"User authorized" });
-        });
-    
-});
 
 exports.resetPassword = function (req, res){
     var emailUser = new User (req.body)

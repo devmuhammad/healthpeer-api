@@ -7,10 +7,10 @@ var Schema = mongoose.Schema
 
 var medicalInfoSchema = new Schema ({
     
-        weight:{type:String},
-        height:{type:String},
-        bloodGroup:{type:String},
-        genotype:{type:String},
+        weight:{type:String, default:'60kg'},
+        height:{type:String, default:'6ft2'},
+        bloodGroup:{type:String,default:'O+'},
+        genotype:{type:String,default:'AA'},
         consultHistory:[{ type: Schema.Types.ObjectId, ref : 'consultHistory'}]
         
 },{
@@ -18,4 +18,4 @@ var medicalInfoSchema = new Schema ({
 });
 
 // Compile model from schema
-module.exports = mongoose.model('medicalInfo', medicalInfoSchema)
+module.exports = mongoose.model('medicalInfo', medicalInfoSchema);

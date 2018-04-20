@@ -4,7 +4,9 @@ const app     = require('express')(),
       bodyParser = require('body-parser');
       
       User = require('./api/models/userModel');
-      
+      medInfo = require ('./api/models/medicalInfoModel.js')
+      consultHistory = require('./api/models/consultHistoryModel.js')
+      consultInfo = require('./api/models/consultInfoModel.js')
       
 
 //Import the mongoose module
