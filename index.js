@@ -10,11 +10,17 @@ const app         = require('express')()
       ,userRouter = require('./api/routes/userRoute')         //import routes
       ,authRouter = require('./api/routes/authRoute')
       ,consultantRoute = require('./api/routes/consultantRoute')
-      ,middleware = require('./api/controller/verifyToken');
+      ,middleware = require('./api/controller/verifyToken')
+      ,morgan = require('morgan')
+      ,fs = require('fs')
+      ,path = require('path');
 
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());      
-      
+app.use(bodyParser.json());  
+
+let httpLogStream = fs.createWriteStream(path.join(__dirname, 'httplogs.log'), {flags: 'a'})    
+app.use(morgan('combined', {stream: httpLogStream}));
+
 // mongoose connection
 mongoose.Promise = global.Promise;
 mongoose.connect(dbConfig.url, {
@@ -26,8 +32,7 @@ mongoose.connect(dbConfig.url, {
   const db = mongoose.connection;
   db.on('error', console.error.bind(console, 'connection error:'));
   db.on('open', () => { console.log(`Connected to db at ${dbConfig.url}`); }); 
-  console.log("Moh is connected")
-
+  console.log("Moh is connected");
 }).catch(err => {
   console.log('Could not connect to the database. Exiting now...');
   process.exit();
@@ -40,5 +45,5 @@ app.use("/auth", authRouter);
 app.use("/consultant", consultantRoute);
 
 
-app.listen(config.app.port);
+app.listen(6990);
 console.log("App running on port "+config.app.port);

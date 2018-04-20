@@ -1,6 +1,6 @@
 module.exports = {  
   app: {
-    "port": process.env.PORT || 6990,
+    "port": process.env.PORT || 4000,
     "secret" : 'toplevelhighlyclassifiedsecret',
   },
 
