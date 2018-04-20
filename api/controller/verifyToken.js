@@ -1,4 +1,3 @@
-
 var jwt = require('jsonwebtoken');
 var config = require('../../config');
 
@@ -18,7 +17,7 @@ function verifyToken (req, res, next) {
   });
   userId = myUser
 //   req.userId = decoded.id;
-console.log(userId)
+
   next()
 }
 module.exports = verifyToken;

@@ -17,7 +17,7 @@
   "author": "umarabdullahi, olawalemuhammad",
   "license": "ISC",
   "dependencies": {
-    "bcrypt-nodejs": "^0.0.3",
+    "bcryptjs": "^2.4.3",
     "body-parser": "^1.18.2",
     "express": "^4.16.3",
     "jsonwebtoken": "^8.2.1",
