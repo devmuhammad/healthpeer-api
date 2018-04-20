@@ -1,8 +1,7 @@
-const router = require("express").Router();
+const Router = require("express").Router();
 const user_controller = require('../controller/userController');
 
-const userRouter = function (router) {
-
+const userRouter = function (router = Router) {
 // User Routes
     router.get('/getusers', user_controller.userslist); // endpoint for retrieving all users GET
     router.post('/create', user_controller.createUser); //endpoint for creating new user POST
@@ -12,4 +11,4 @@ const userRouter = function (router) {
     router.delete('/delete/:userId', user_controller.deleteUser); //endpoint to delete user by Id DELETE
 };
 
-module.exports = userRouter(router);
+module.exports = userRouter;

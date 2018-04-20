@@ -4,7 +4,7 @@ const app         = require('express')()
       ,dbConfig   = require('./config/database.config')
       ,bodyParser = require('body-parser')
       ,User       = require('./api/models/userModel')
-      ,userRouter = require('./api/routes/userRoute')  //import user route
+      ,userRouter = require('./api/routes/userRoute')  //import routes
       ,authRouter = require('./api/routes/authRoute')
       ,middleware = require('./api/controller/verifyToken');
 
@@ -27,9 +27,9 @@ mongoose.connect(dbConfig.url, {
   process.exit();
 });
       
-app.use(middleware)
+//app.use(middleware)
 // Routes
-//app.use("/user", userRouter);
+app.use("/user", userRouter);
 app.use("/auth", authRouter);
 
 

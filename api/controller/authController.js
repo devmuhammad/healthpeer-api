@@ -2,7 +2,7 @@
     User = mongoose.model('User')
     var emailer = require('../../config/mailer')
     var jwt = require('jsonwebtoken');
-    var bcrypt = require('bcryptjs');
+    //var bcrypt = require('bcryptjs');
     var config = require('../../config');
     var verifyToken = require('./verifyToken');
     const uuidv4 = require('uuid/v4');

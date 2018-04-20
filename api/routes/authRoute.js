@@ -1,7 +1,7 @@
-const router = require("express").Router();
+const Router = require("express").Router();
 const auth_controller = require('../controller/authController');
 
-const authRouter = (router) => {
+const authRouter = (router = Router) => {
 
 //Authentication Routes
     router.get('/auth/me', auth_controller.signedHeader) //endpoint for checking tokens in header GET
@@ -20,4 +20,4 @@ const authRouter = (router) => {
 
 };
 
-module.exports = authRouter(router)
+module.exports = authRouter;
