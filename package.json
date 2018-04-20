@@ -4,7 +4,8 @@
   "description": "remote health consultancy application",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon index.js"
+    "start": "node index.js",
+    "dev": "nodemon index.js"
   },
   "keywords": [
     "health",
@@ -16,17 +17,12 @@
   "author": "umarabdullahi, olawalemuhammad",
   "license": "ISC",
   "dependencies": {
-    "async": "^2.6.0",
     "bcrypt-nodejs": "^0.0.3",
-    "bcryptjs": "^2.4.3",
     "body-parser": "^1.18.2",
-    "crypto": "^1.0.1",
     "express": "^4.16.3",
     "jsonwebtoken": "^8.2.1",
     "mongoose": "^5.0.14",
-    "node-uuid": "^1.4.8",
     "nodemailer": "^4.6.4",
-    "nodemon": "^1.17.3",
     "pusher-chatkit-server": "^0.11.1",
     "uuid": "^3.2.1"
   }
