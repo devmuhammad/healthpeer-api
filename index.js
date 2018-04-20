@@ -42,8 +42,7 @@ app.use(['/user', '/medicalinfo'],middleware)
 // Routes
 app.use("/user", userRouter);
 app.use("/auth", authRouter);
-app.use("/consultant", consultantRoute);
+app.use("/consultant", consultantRoute)
 
-
-app.listen(6990);
+app.listen(4011);
 console.log("App running on port "+config.app.port);

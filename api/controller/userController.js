@@ -8,8 +8,17 @@
  //Create New User Method
 
  exports.createUser = function (req, res){
+  if(req.body.accountType === "patient")
+  {
+    var newUser = new User;
+    newUser.accountType = "patient";
+    newUser.firstName = "umar"
+    newUser.lastName = "abdul"
+    newUser.userName = "uae"
+    newUser.email = req.body.email
+    newUser.password = "test"
+    console.log(req.body)
 
-    var newUser = new User (req.body);
     if (!newUser) return res.status(400).json({status:"error", message:"Empty or Incomplete Parameters for New User "});
     
     User.findOne ({ email : newUser.email }, function(err, user){
@@ -17,11 +26,12 @@
        if (user) return res.status(401).json({status:"error", message:"Email already exist"}); 
        
        newUser.save( function (err, user){
-        if (err) return res.status(500).json({status:"error", message:"There was a problem adding the info to the DB"});
+         if (err) return res.status(500).json({status:"error", message:"There was a problem adding the info to the DB"});
         
-      res.status(200).json({status:"success", message:"Users added successfully",data:user});
-    })
- });
+         res.status(200).json({status:"success", message:"Users added successfully",data:user});
+       })
+    });
+  }
 };
     
  exports.userslist = function (req, res){

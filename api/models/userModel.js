@@ -1,4 +1,4 @@
-'use strict';
+//'use strict';
 //Require Mongoose
 var mongoose = require ('mongoose');
 //Define a schema
@@ -24,5 +24,19 @@ var UserSchema = new Schema ({
   timestamps: true
 });
 
+
+/**UserSchema.pre("save", function(next) {
+  console.log(this.accountType)
+  if(this.accountType === "patient"){
+    this.schema.add([{ allergy : 'string', accountType: {type:String} }])
+    UserSchema.add([{ allergy : 'string', accountType: String }])
+    this.accountType = "patient"
+    this.save().then((res)=> {console.log(res)}).catch((err) => console.log(err))
+  }else {
+    console.log("reachable")
+  }
+  next()
+})*/
+
 // Compile model from schema
-module.exports = mongoose.model('User', UserSchema)
+module.exports = mongoose.model('User', UserSchema);

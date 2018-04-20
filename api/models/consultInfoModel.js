@@ -20,9 +20,7 @@ var consultantInfoSchema = new Schema ({
     passwordResetKey:{
       passHash:{type:String},
       token:{type:String}
-    },
-        
-    
+    }, 
 },{
   timestamps: true
 });
