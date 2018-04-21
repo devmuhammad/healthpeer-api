@@ -1,7 +1,5 @@
-//'use strict';
-//Require Mongoose
+'use strict';
 var mongoose = require ('mongoose');
-//Define a schema
 var Schema = mongoose.Schema
 
 
@@ -31,7 +29,6 @@ var UserSchema = new Schema ({
     this.schema.add([{ allergy : 'string', accountType: {type:String} }])
     UserSchema.add([{ allergy : 'string', accountType: String }])
     this.accountType = "patient"
-    this.save().then((res)=> {console.log(res)}).catch((err) => console.log(err))
   }else {
     console.log("reachable")
   }

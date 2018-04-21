@@ -1,8 +1,6 @@
 const router = require("express").Router();
 const auth_controller = require('../controller/authController');
 
-
-
 //Authentication Routes
     router.get('/me', auth_controller.signedHeader) //endpoint for checking tokens in header GET
 
