@@ -12,15 +12,17 @@ var consultantInfoSchema = new Schema ({
     password:{type: String, required: true, max: 100},
     dofBirth:{type: Date},
     gender:{type:String},
-    speciality:{type:String},
     phoneNumber:{type:String},
+    speciality:{type:String},
     folioNumber:{type:String},
     yofPractice:{type:String},
     currentJob:{type:String},
     passwordResetKey:{
       passHash:{type:String},
       token:{type:String}
-    }, 
+    },
+        
+    
 },{
   timestamps: true
 });
