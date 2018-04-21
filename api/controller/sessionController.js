@@ -4,7 +4,11 @@ const User           = mongoose.model('User')
 const Session        = mongoose.model('Session')
 
 
-
+/**
+ * Buy a session
+ * @param {*} req 
+ * @param {*} res 
+ */
 exports.subscribeForSessions = function (req, res) {
 
 }
