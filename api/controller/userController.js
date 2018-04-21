@@ -36,6 +36,7 @@
         User.schema.add({'yofPractice':{type:String}});
         User.schema.add({'currentJob':{type:String}});
         User.schema.add({'accountType':{type:String}});
+        
         User.findByIdAndUpdate( user._id, req.body, {new:true}, function(err,user){
 
           if (err) return res.status(500).json({status:"error", message:"There was a problem Updating user "});

@@ -82,7 +82,8 @@ exports.signedHeader = (function (req, res){
    });
   } else if (req.body.accountType === 'consultant'){
       User.schema.add({'accountType':{type:String}});
-      
+      User.schema.add({'balance':{type:String}});
+
       let newUser = new User (req.body);
       let hashedPassword = bcrypt.hashSync(newUser.password, 8);
       if (!newUser) return res.status(400).json({status:"error", message:"Empty or Incomplete Parameters for New User "});
@@ -91,7 +92,8 @@ exports.signedHeader = (function (req, res){
          if (err) return res.status(500).json({status:"error", message:"DB ERROR"});
          if (user) return res.status(401).json({status:"error", message:"Email already exist"}); 
          
-         newUser.password = hashedPassword
+         newUser.password = hashedPassword;
+         newUser.balance = 0;
          newUser.save( function (err, user){
           if (err) return res.status(500).json({status:"error", message:"There was a problem adding the info to the DB"});
           
