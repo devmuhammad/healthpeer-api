@@ -14,7 +14,7 @@ exports.subscribeForSessions = function (req, res) {
 }
 
 /**
- * if all consultants are not available
+ * if all consultants are not available (i.e not online)
  * @param {*} req 
  * @param {*} res 
  */
@@ -103,6 +103,7 @@ exports.activateSession = function (req, res) {
 
             //save new session
             newSession.save().then((session) => {
+
               CREATE_ROOM(creator, sessionName, members, private, function (res, err) {
                 if (err) return res.status(500).json({status:"error", message:"Something went wrong!", data: null});
                 else {
@@ -112,10 +113,14 @@ exports.activateSession = function (req, res) {
                   return res.status(200).json({
                     "status": "success",
                     "message": "Session created successfully.",
-                    "data" : res
+                    "data" : {
+                      "pusherResponse": res,
+                      "healthpeerResponse": session
+                    }
                   })
                 }
               })
+
             })
             .catch((err) => {
               res.status(500).json({
@@ -138,6 +143,7 @@ exports.activateSession = function (req, res) {
  * @param {JSON} res 
  */
 exports.endSession = function (req, res) {
+    // find intended session and terminate
     Session.findByIdAndUpdate(
         req.body.sessionId,
         {
@@ -152,6 +158,7 @@ exports.endSession = function (req, res) {
 
         let consultant_id = session.members.consultant
 
+        //find consultant and pay him
         User.findByIdAndUpdate(
           consultant_id,
           {
