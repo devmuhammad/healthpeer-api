@@ -188,8 +188,8 @@ exports.reactivateSession = function (req, res) {
 
     //search for session and assign previous consultant
     Session.findById(req.body.sessionId).exec(function (err, prevSession) {
-        if(err) return res.status(500).json({"status":"error", "message": ""})
-        if(!prevSession) return res.status(400).json({"status": "error", "message": ""})
+        if(err) return res.status(500).json({"status":"error", "message": "Something went wrong!", "data":null})
+        if(!prevSession) return res.status(400).json({"status": "error", "message": "Unable to find session.", "data":null})
 
         let consultant = prevSession.members.consultant
         let patient = prevSession.members.patient
@@ -200,8 +200,8 @@ exports.reactivateSession = function (req, res) {
             "availableSessionCount": { $gt: 0 }
         }).exec(function(err, user) {
             
-            if(err) return res.status(500).json({"status":"error", "message": ""})
-            if(!user) return res.status(400).json({"status": "error", "message": ""})
+            if(err) return res.status(500).json({"status":"error", "message": "Something went wrong!"})
+            if(!user) return res.status(400).json({"status": "error", "message": "Purchase a session bundle."})
 
             let creator = req.body.requestedBy
                 ,sessionName = prevSession.name
@@ -235,7 +235,7 @@ exports.reactivateSession = function (req, res) {
             .catch((err) => {
               res.status(500).json({
                 "status": "error",
-                "message": "Unable to activate session.",
+                "message": "Unable to reactivate session. Try again.",
                 "data": null
               })
             })
