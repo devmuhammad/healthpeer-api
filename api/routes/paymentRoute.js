@@ -1,15 +1,18 @@
 const router = require("express").Router();
-const moneywave = require('../../services/paymentService')("ts_ZISPSJAKM13ZACA4447N","ts_AT8TI5W6VQM7ZV7E6EI6ALQ6LM3PBH");
-
-
+const pay_controller = require('../controller/paymentController');
 
 // consultant Routes
-    router.post('/transfer', moneywave.WalletFunding.CardToWallet); // endpoint for making payment with card POST
-    router.post('/transfer', moneywave.WalletFunding.AccountToWallet); //endpoint for making payment with Account POST
-    router.post('/transfer', moneywave.WalletFunding.AccountToWallet);
-    router.get('/get/:consultantId', consultant_controller.consultantbyid);  //endpoint for retrieving single consultant by id GET
-    router.put('/update/:consultantId', consultant_controller.updateconsultantProfile); //endpoint to update consultants profile  PUT
-    router.delete('/delete/:consultantId', consultant_controller.deleteConsultant); //endpoint to delete consultant by Id DELETE
+    router.post('/withdraw', pay_controller.makeWithdrawal); // endpoint for making withdrawal to consultant account POST
+    
+    router.get('/banklist',  pay_controller.listBank); //endpoint for listing banks GET
+    
+    router.post('/totalcharge',  pay_controller.getTotalCardCharge); //endpoint for getting total charges to be paid POST 
+   
+    router.post('/retrytrans', pay_controller.RetryFailedTransaction);  //endpoint for retrying Failed transactions POST
+    
+    router.post('/transtatus', pay_controller.transactionStatus); //endpoint to get withdrawal transaction status  POST 
+   
+    router.post('/validateacct', pay_controller.validateAccountNumber); //endpoint to validate Account Number POST
 
 
     

@@ -42,7 +42,7 @@ app.use(['/user', '/medicalinfo'],middleware)
 // Routes
 app.use("/user", userRouter);
 app.use("/auth", authRouter);
-app.use("/v1", paymentRoute);
+app.use("/pay", paymentRoute);
 
 
 app.listen(config.app.port);

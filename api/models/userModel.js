@@ -10,6 +10,7 @@ var UserSchema = new Schema ({
     lastName:{type: String,  max: 100},
     password:{type: String, required: true, max: 100},
     dofBirth:{type: Date},
+    state:{type: String},
     gender:{type:String},
     phoneNumber:{type:String},
     passwordResetKey:{

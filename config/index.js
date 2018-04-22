@@ -5,7 +5,8 @@ module.exports = {
   },
   moneywave:{
     "apiKey":"ts_ZISPSJAKM13ZACA4447N",
-    "secret":"ts_AT8TI5W6VQM7ZV7E6EI6ALQ6LM3PBH"
+    "secret":"ts_AT8TI5W6VQM7ZV7E6EI6ALQ6LM3PBH",
+    "lock": "healthpeer@1"
   },
   pusher: {
     "instance_locator": "v1:us1:4cb9c4b8-5cdc-48b4-92ff-3afe48ea9661",

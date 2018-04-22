@@ -24,11 +24,11 @@ exports.subscribeWithCard = function(req, res){
       'lastname': lastname,
       'phonenumber':phonenumber, 
       'email': email, 
-      'recipient': wallet, 
+      'recipient': "wallet", 
       'card_no': req.body.card_no, 
       'cvv': req.body.cvv, 
       'pin': req.body.pin,
-      'charge_auth': PIN,
+      'charge_auth': "PIN",
       'expiry_year': req.body.expiry_year, 
       'expiry_month': req.body.expiry_month, 
       'apiKey': config.moneywave.apiKey, 
@@ -39,12 +39,12 @@ exports.subscribeWithCard = function(req, res){
   }
   if(req.body.pin){
       moneywave.CardToWallet.chargeLocalCard(body, function(err, res){
-          if (err) { return res.status(500).json({status:"error", message:"Problem contacting Server"});}
+          if (err) { return res.status(500).json({status:"error", message:"Problem contacting Moneywave Server"});}
   
   })
 }else
-  moneywave.CardToWallet.charge(body, function(err, res){
-      if (err) { return res.status(500).json({status:"error", message:"Problem contacting Server"});}
+  moneywave.CardToWallet.charge(body, function(err, trfinfo){
+      if (err) { return res.status(500).json({status:"error", message:"Problem contacting Moneywave Server"});}
 
 
   })
@@ -65,8 +65,8 @@ exports.subscribeWithAccount = function(req, res){
       'lastname':lastname,
       'phonenumber':phonenumber, 
       'email': email, 
-      'recipient': wallet, 
-      'charge_with': account, 
+      'recipient': "wallet", 
+      'charge_with': "account", 
       'sender_account_number': req.body.accountnumber, 
       'sender_bank': req.body.bank, 
       'apiKey': config.moneywave.apiKey, 
@@ -75,17 +75,14 @@ exports.subscribeWithAccount = function(req, res){
       'redirecturl':g, // endpoint to save transaction details
       'medium': req.body.requestmedium,
   }
-  moneywave.AccountToWallet.transfer(body, function(err, res){
-      if (err) { return res.status(500).json({status:"error", message:"Problem contacting Server"});}
+  moneywave.AccountToWallet.transfer(body, function(err, trfinfo){
+      if (err) { return res.status(500).json({status:"error", message:"Problem contacting Moneywave Server"});}
 
 
   })
 }
 })
 };
-exports.validateAccount = function(req, res){
-
-}
 
 exports.subscribeWithInternetPay = function(req, res){
   User.findById(req.body.userId, function(err, user){
@@ -110,8 +107,8 @@ exports.subscribeWithInternetPay = function(req, res){
       'redirecturl':g, // endpoint to save transaction details
       'medium': req.body.requestmedium,
   }
-  moneywave.PayWithInternetBanking.transfer(body, function(err, res){
-      if (err) { return res.status(500).json({status:"error", message:"Problem contacting Server"});}
+  moneywave.PayWithInternetBanking.transfer(body, function(err, trfinfo){
+      if (err) { return res.status(500).json({status:"error", message:"Problem contacting Moneywave Server"});}
 
 
   })

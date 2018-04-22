@@ -83,7 +83,11 @@ exports.signedHeader = (function (req, res){
   } else if (req.body.accountType === 'consultant'){
       User.schema.add({'accountType':{type:String}});
       User.schema.add({'balance':{type:String}});
-
+      User.schema.add({'speciality':{type:String}});
+      User.schema.add({'folioNumber':{type:String}});
+      User.schema.add({'yofPractice':{type:String}});
+      User.schema.add({'currentJob':{type:String}});
+      
       let newUser = new User (req.body);
       let hashedPassword = bcrypt.hashSync(newUser.password, 8);
       if (!newUser) return res.status(400).json({status:"error", message:"Empty or Incomplete Parameters for New User "});
