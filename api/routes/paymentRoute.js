@@ -1,11 +1,12 @@
 const router = require("express").Router();
-const consultant_controller = require('../controller/consultInfoController');
+const moneywave = require('../../services/paymentService')("ts_ZISPSJAKM13ZACA4447N","ts_AT8TI5W6VQM7ZV7E6EI6ALQ6LM3PBH");
+
 
 
 // consultant Routes
-    router.get('/get/', consultant_controller.consultantslist); // endpoint for retrieving all consultants GET
-    router.post('/create', consultant_controller.createConsultant); //endpoint for creating new consultant POST
-
+    router.post('/transfer', moneywave.WalletFunding.CardToWallet); // endpoint for making payment with card POST
+    router.post('/transfer', moneywave.WalletFunding.AccountToWallet); //endpoint for making payment with Account POST
+    router.post('/transfer', moneywave.WalletFunding.AccountToWallet);
     router.get('/get/:consultantId', consultant_controller.consultantbyid);  //endpoint for retrieving single consultant by id GET
     router.put('/update/:consultantId', consultant_controller.updateconsultantProfile); //endpoint to update consultants profile  PUT
     router.delete('/delete/:consultantId', consultant_controller.deleteConsultant); //endpoint to delete consultant by Id DELETE

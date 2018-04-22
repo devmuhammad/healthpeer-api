@@ -9,7 +9,7 @@ const app         = require('express')()
       ,consultInfo = require('./api/models/consultInfoModel')
       ,userRouter = require('./api/routes/userRoute')         //import routes
       ,authRouter = require('./api/routes/authRoute')
-      ,consultantRoute = require('./api/routes/consultantRoute')
+      ,paymentRoute = require('./api/routes/paymentRoute')
       ,middleware = require('./api/controller/verifyToken')
       ,morgan = require('morgan')
       ,fs = require('fs')
@@ -42,7 +42,7 @@ app.use(['/user', '/medicalinfo'],middleware)
 // Routes
 app.use("/user", userRouter);
 app.use("/auth", authRouter);
-app.use("/consultant", consultantRoute);
+app.use("/v1", paymentRoute);
 
 
 app.listen(config.app.port);
