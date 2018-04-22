@@ -2,6 +2,7 @@
 User = mongoose.model('User')
 config = require('../../config/index')
 const moneywave = require('../../services/paymentService')(config.moneywave.apiKey,config.moneywave.secret);
+consultantTransaction = mongoose.model('consultantTransaction')
 
 exports.makeWithdrawal = function (req, res){
     User.findById(req.body.userId, function(err, user){
@@ -22,15 +23,35 @@ exports.makeWithdrawal = function (req, res){
 
             moneywave.WalletToAccountTransfer.transfer(body, function(err, trfinfo){
                 if (err) { return res.status(500).json({status:"error", message:"Problem contacting Moneywave Server"});}
-            if(trfinfo.data.data.responsecode === '00'){
-                return res.status(200).json({status:"success", message:"", data:trfinfo.data});
-            }
+            
+                if (trfinfo.data.data.responsecode === '00'){
+                return res.status(200).json({status:"success", message:"transaction Successful", data:trfinfo.data});
+            let trans = {
+                'userId': user._id,
+                'userName': user.userName,
+                'email': user.email,
+                'phoneNumber': user.phoneNumber,
+                'uniqueRef': trfinfo.data.data.uniquereference,
+                'bankCode': body.bankcode,
+                'accountNumber': body.accountNumber,
+                'amountWithdrawn': body.amount,
+                'responsecode': trfinfo.data.data.responsecode,
+                'responsemessage': trfinfo.data.data.responsemessage
+            };
+
+            let newTransaction = new consultantTransaction (trans);
+            newTransaction.save( function (err, transinfo){
+                if (err) { return res.status(500).json({status:"error", message:"There was a problem adding the info to the DB"});}
+                if (transinfo){ return res.status(200).json({status:"success", message:"transaction saved successfully", data:transinfo});}
+                
             });
         }
-    }
+        });
+        }
+    };
     
-})
-};
+});
+}
 
 exports.listBank = function (req, res){
     moneywave.Banks.get(function (err, banks){

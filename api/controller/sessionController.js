@@ -2,8 +2,8 @@ const {CREATE_ROOM}  = require("../../services/pusherService")
 const mongoose       = require('mongoose')
 const User           = mongoose.model('User')
 const Session        = mongoose.model('Session')
-const config = require('../../config/index')
-const moneywave = require('../../services/paymentService')(config.moneywave.apiKey,config.moneywave.secret);
+const config         = require('../../config/index')
+const moneywave      = require('../../services/paymentService')(config.moneywave.apiKey,config.moneywave.secret);
 
 
 /**
@@ -15,10 +15,10 @@ exports.subscribeWithCard = function(req, res){
   User.findById(req.body.userId, function(err, user){
       if (err) { return res.status(500).json({status:"error", message:"DB_ERROR"});}
   if (user){
-      firstname = user.firstName;
-      lastname = user.lastName;
-      phonenumber = user.phoneNumber;
-      email = user.email
+     let firstname = user.firstName;
+     let lastname = user.lastName;
+     let phonenumber = user.phoneNumber;
+     let email = user.email
   let body = {
       'firstname': firstname, 
       'lastname': lastname,
@@ -56,10 +56,10 @@ exports.subscribeWithAccount = function(req, res){
   User.findById(req.body.userId, function(err, user){
       if (err) { return res.status(500).json({status:"error", message:"DB_ERROR"});}
   if (user){
-      firstname = user.firstName;
-      lastname = user.lastName;
-      phonenumber = user.phoneNumber;
-      email = user.email
+    let firstname = user.firstName;
+    let lastname = user.lastName;
+    let phonenumber = user.phoneNumber;
+    let email = user.email
   let body = {
       'firstname':firstname, 
       'lastname':lastname,
@@ -88,10 +88,10 @@ exports.subscribeWithInternetPay = function(req, res){
   User.findById(req.body.userId, function(err, user){
       if (err) { return res.status(500).json({status:"error", message:"DB_ERROR"});}
   if (user){
-      firstname = user.firstName;
-      lastname = user.lastName;
-      phonenumber = user.phoneNumber;
-      email = user.email
+    let firstname = user.firstName;
+    let lastname = user.lastName;
+    let phonenumber = user.phoneNumber;
+    let email = user.email
   let body = {
       'firstname': firstname, 
       'lastname': lastname,
@@ -107,10 +107,11 @@ exports.subscribeWithInternetPay = function(req, res){
       'redirecturl':g, // endpoint to save transaction details
       'medium': req.body.requestmedium,
   }
+
   moneywave.PayWithInternetBanking.transfer(body, function(err, trfinfo){
       if (err) { return res.status(500).json({status:"error", message:"Problem contacting Moneywave Server"});}
-
-
+    if (trfinfo.status === 'success') { return res.status(200).json({status:"success", message:"transaction Successful, Pending Validation", data:trfinfo});}
+    if (trfinfo.status === 'error')   {return res.status(404).json({status:"error", message:""})}
   })
 }
 })
