@@ -7,14 +7,14 @@ const moneywave = require('../../services/paymentService')(config.moneywave.apiK
 
 
 /**
- * Buy a session
+ * Buy a session (using debit card)
  * @param {*} req 
  * @param {*} res 
  */
 exports.subscribeWithCard = function(req, res){
   User.findById(req.body.userId, function(err, user){
       if (err) { return res.status(500).json({status:"error", message:"DB_ERROR"});}
-  if (user){
+  if (user) {
       firstname = user.firstName;
       lastname = user.lastName;
       phonenumber = user.phoneNumber;
@@ -52,6 +52,12 @@ exports.subscribeWithCard = function(req, res){
 })
 };
 
+
+/**
+ * Buy a session (through account number)
+ * @param {*} req 
+ * @param {*} res 
+ */
 exports.subscribeWithAccount = function(req, res){
   User.findById(req.body.userId, function(err, user){
       if (err) { return res.status(500).json({status:"error", message:"DB_ERROR"});}
@@ -84,6 +90,11 @@ exports.subscribeWithAccount = function(req, res){
 })
 };
 
+/**
+ * Buy a session (using internet banking)
+ * @param {*} req 
+ * @param {*} res 
+ */
 exports.subscribeWithInternetPay = function(req, res){
   User.findById(req.body.userId, function(err, user){
       if (err) { return res.status(500).json({status:"error", message:"DB_ERROR"});}

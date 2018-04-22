@@ -8,15 +8,10 @@ const pay_controller = require('../controller/paymentController');
     
     router.post('/totalcharge',  pay_controller.getTotalCardCharge); //endpoint for getting total charges to be paid POST 
    
-    router.post('/retrytrans', pay_controller.RetryFailedTransaction);  //endpoint for retrying Failed transactions POST
+    router.post('/retrytransaction', pay_controller.RetryFailedTransaction);  //endpoint for retrying Failed transactions POST
     
     router.post('/transtatus', pay_controller.transactionStatus); //endpoint to get withdrawal transaction status  POST 
    
     router.post('/validateacct', pay_controller.validateAccountNumber); //endpoint to validate Account Number POST
-
-
-    
-
-
 
 module.exports = router;
