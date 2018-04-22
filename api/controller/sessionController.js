@@ -44,7 +44,7 @@ const offlineActivation = function (req, res) {
           CREATE_ROOM(creator, sessionName, members, private, function (res, err) {
             if (err) return res.status(500).json({ status: "error", message: "Something went wrong!", data: null });
             else {
-              user.availableSessionCount -= user.availableSessionCount //reduce available session count and save
+              user.availableSessionCount -= 1 //reduce available session count and save
               user.save().then((res) => console.log(res.id + "session -1")).catch((err) => console.log(user._id + "session 0"))
 
               return res.status(200).json({
@@ -93,9 +93,9 @@ exports.activateSession = function (req, res) {
         {
             let selectedConsultant = consultants[0]._id
             let creator = req.body.requestedBy
-                ,sessionName = req.body.patient + "::" + selectedConsultant.username
-                ,members = [user._id, selectedConsultant._id]
-                ,private = true
+                , sessionName = req.body.patient + "::" + selectedConsultant.username
+                , members = [user._id, selectedConsultant._id]
+                , private = true
 
             //create the session and save
             let newSession = new Session()
@@ -108,7 +108,7 @@ exports.activateSession = function (req, res) {
               CREATE_ROOM(creator, sessionName, members, private, function (res, err) {
                 if (err) return res.status(500).json({status:"error", message:"Something went wrong!", data: null});
                 else {
-                  user.availableSessionCount -= user.availableSessionCount //reduce available session count and save
+                  user.availableSessionCount -= 1 //reduce available session count and save
                   user.save().then((res) => console.log(res.id+"session -1")).catch((err) => console.log(user._id+"session 0"))
                   
                   return res.status(200).json({
