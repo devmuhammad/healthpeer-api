@@ -31,12 +31,7 @@
       if (!user) return res.status(404).json({status:"error", message:"user not found"});
       
       if (user.accountType === 'consultant'){
-        User.schema.add({'speciality':{type:String}});
-        User.schema.add({'folioNumber':{type:String}});
-        User.schema.add({'yofPractice':{type:String}});
-        User.schema.add({'currentJob':{type:String}});
-        User.schema.add({'accountType':{type:String}});
-        
+                
         User.findByIdAndUpdate( user._id, req.body, {new:true}, function(err,user){
 
           if (err) return res.status(500).json({status:"error", message:"There was a problem Updating user "});
@@ -44,7 +39,7 @@
           res.status(200).json({status:"success", message:"user updated successfully",data:user});
         });
       } if(user.accountType === 'patient'){
-        User.findAndUpdate( req.params.userId, req.body, {new:true}, function(err,user){
+        User.findAndUpdate( user._id, req.body, {new:true}, function(err,user){
 
           if (err) return res.status(500).json({status:"error", message:"There was a problem Updating user "});
           

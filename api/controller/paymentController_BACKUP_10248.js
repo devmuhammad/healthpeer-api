@@ -1,11 +1,25 @@
-
-User = mongoose.model('User')
-config = require('../../config/index')
-const moneywave = require('../../services/paymentService')(config.moneywave.apiKey,config.moneywave.secret);
+const User = mongoose.model('User')
+      ,config = require('../../config/index').moneywave
+      ,moneywave = require('../../services/paymentService')(config.apiKey,config.secret)
 
 exports.makeWithdrawal = function (req, res){
-    User.findById(req.body.userId, function(err, user){
+    User.findById(req.body.userId, function(err, user) {
         if (err) { return res.status(500).json({status:"error", message:"DB_ERROR"});}
+<<<<<<< HEAD
+
+        if (user) {
+            let body = {
+                'lock':f,
+                'amount': req.body.amount, 
+                'bankcode': req.body.bankcode, 
+                'accountNumber': req.body.accountNumber, 
+                'currency': "NGN", 
+                'senderName': "HealthPeer NG", 
+                'ref':g,
+            }
+        }
+    })
+=======
     if (user){
         let body = {
             'lock': config.moneywave.lock,
@@ -46,6 +60,7 @@ exports.validateAccountNumber = function(req, res){
 let body = {
     'account_number': req.body.accountnumber,
      'bank_code': req.body.bankcode
+>>>>>>> 4728309fead6baaccd6d9f28e6804641fa12caf2
 }
 moneywave.ValidateAccountNumber.validate(body, function(err, acctinfo){
     if (err) { return res.status(500).json({status:"error", message:"Problem contacting Moneywave Server"});}

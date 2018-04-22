@@ -2,16 +2,119 @@ const {CREATE_ROOM}  = require("../../services/pusherService")
 const mongoose       = require('mongoose')
 const User           = mongoose.model('User')
 const Session        = mongoose.model('Session')
+const config = require('../../config/index')
+const moneywave = require('../../services/paymentService')(config.moneywave.apiKey,config.moneywave.secret);
 
 
 /**
  * Buy a session
- * @param {id,requestedBy,consultationType} req 
- * @param {JSON} res 
+ * @param {*} req 
+ * @param {*} res 
  */
-exports.subscribeForSessions = function (req, res) {
+exports.subscribeWithCard = function(req, res){
+  User.findById(req.body.userId, function(err, user){
+      if (err) { return res.status(500).json({status:"error", message:"DB_ERROR"});}
+  if (user){
+      firstname = user.firstName;
+      lastname = user.lastName;
+      phonenumber = user.phoneNumber;
+      email = user.email
+  let body = {
+      'firstname': firstname, 
+      'lastname': lastname,
+      'phonenumber':phonenumber, 
+      'email': email, 
+      'recipient': "wallet", 
+      'card_no': req.body.card_no, 
+      'cvv': req.body.cvv, 
+      'pin': req.body.pin,
+      'charge_auth': "PIN",
+      'expiry_year': req.body.expiry_year, 
+      'expiry_month': req.body.expiry_month, 
+      'apiKey': config.moneywave.apiKey, 
+      'amount': req.body.amount, 
+      'fee':0, 
+      'redirecturl':g, // endpoint to save transaction details
+      'medium': req.body.requestmedium,
+  }
+  if(req.body.pin){
+      moneywave.CardToWallet.chargeLocalCard(body, function(err, res){
+          if (err) { return res.status(500).json({status:"error", message:"Problem contacting Moneywave Server"});}
+  
+  })
+}else
+  moneywave.CardToWallet.charge(body, function(err, trfinfo){
+      if (err) { return res.status(500).json({status:"error", message:"Problem contacting Moneywave Server"});}
 
+
+  })
 }
+})
+};
+
+exports.subscribeWithAccount = function(req, res){
+  User.findById(req.body.userId, function(err, user){
+      if (err) { return res.status(500).json({status:"error", message:"DB_ERROR"});}
+  if (user){
+      firstname = user.firstName;
+      lastname = user.lastName;
+      phonenumber = user.phoneNumber;
+      email = user.email
+  let body = {
+      'firstname':firstname, 
+      'lastname':lastname,
+      'phonenumber':phonenumber, 
+      'email': email, 
+      'recipient': "wallet", 
+      'charge_with': "account", 
+      'sender_account_number': req.body.accountnumber, 
+      'sender_bank': req.body.bank, 
+      'apiKey': config.moneywave.apiKey, 
+      'amount': req.body.amount, 
+      'fee':0, 
+      'redirecturl':g, // endpoint to save transaction details
+      'medium': req.body.requestmedium,
+  }
+  moneywave.AccountToWallet.transfer(body, function(err, trfinfo){
+      if (err) { return res.status(500).json({status:"error", message:"Problem contacting Moneywave Server"});}
+
+
+  })
+}
+})
+};
+
+exports.subscribeWithInternetPay = function(req, res){
+  User.findById(req.body.userId, function(err, user){
+      if (err) { return res.status(500).json({status:"error", message:"DB_ERROR"});}
+  if (user){
+      firstname = user.firstName;
+      lastname = user.lastName;
+      phonenumber = user.phoneNumber;
+      email = user.email
+  let body = {
+      'firstname': firstname, 
+      'lastname': lastname,
+      'phonenumber': phonenumber, 
+      'email': email, 
+      'recipient': "wallet", 
+      'charge_with': "ext_account", 
+      'charge_auth': "INTERNETBANKING",
+      'sender_bank': req.body.bank, 
+      'apiKey': config.moneywave.apiKey, 
+      'amount': req.body.amount, 
+      'fee':0, 
+      'redirecturl':g, // endpoint to save transaction details
+      'medium': req.body.requestmedium,
+  }
+  moneywave.PayWithInternetBanking.transfer(body, function(err, trfinfo){
+      if (err) { return res.status(500).json({status:"error", message:"Problem contacting Moneywave Server"});}
+
+
+  })
+}
+})
+};
 
 /**
  * if all consultants are not available (i.e not online)
@@ -29,9 +132,9 @@ const offlineActivation = function (req, res) {
 
         let selectedConsultant = consultants[0]._id
         let creator = req.body.requestedBy
-          , sessionName = req.body.patient + "::" + selectedConsultant.username
-          , members = [user._id, selectedConsultant._id]
-          , private = true
+            ,sessionName = req.body.patient + "::" + selectedConsultant.username
+            ,members = [user._id, selectedConsultant._id]
+            ,private = true
 
         //create the session and save
         let newSession = new Session()
