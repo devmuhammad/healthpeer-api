@@ -11,7 +11,7 @@ var medicalInfoSchema = new Schema ({
         height:{type:String, default:'6ft2'},
         bloodGroup:{type:String,default:'O+'},
         genotype:{type:String,default:'AA'},
-        consultHistory:[{ type: Schema.Types.ObjectId, ref : 'consultHistory'}]
+        consultationHistory:[{ type: Schema.Types.ObjectId, ref : 'consultHistory'}]
         
 },{
   timestamps: true
