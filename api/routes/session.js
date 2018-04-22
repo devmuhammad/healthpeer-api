@@ -10,6 +10,8 @@ const sessionController = require('../controller/sessionController');
 
     router.post('/activate', sessionController.activateSession)// endpoint for activating new sessions POST
 
+    router.post('/reactivate', sessionController.reactivateSession)// endpoint for activating new sessions POST
+
     router.post('/terminate', sessionController.endSession);//endpoint for ending sessions POST 
 
 module.exports = router;

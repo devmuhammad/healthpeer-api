@@ -179,6 +179,71 @@ const offlineActivation = function (req, res) {
     })
 }
 
+/**
+ * Start session with previous consultant
+ * @param {JSON:{Sessionid, requestedBy}} req 
+ * @param {*} res 
+ */
+exports.reactivateSession = function (req, res) {
+
+    //search for session and assign previous consultant
+    Session.findById(req.body.sessionId).exec(function (err, prevSession) {
+        if(err) return res.status(500).json({"status":"error", "message": ""})
+        if(!prevSession) return res.status(400).json({"status": "error", "message": ""})
+
+        let consultant = prevSession.members.consultant
+        let patient = prevSession.members.patient
+
+        // check if user has bought sessions
+        User.findOne({
+            "_id": patient,
+            "availableSessionCount": { $gt: 0 }
+        }).exec(function(err, user) {
+            
+            if(err) return res.status(500).json({"status":"error", "message": ""})
+            if(!user) return res.status(400).json({"status": "error", "message": ""})
+
+            let creator = req.body.requestedBy
+                ,sessionName = prevSession.name
+                ,members = [patient, consultant]
+                ,private = true
+
+            //create the session and save
+            let newSession = new Session()
+            newSession.name = sessionName
+            newSession.members.patient = members[0]
+            newSession.members.consultant = members[1]
+
+            //save new session
+            newSession.save().then((session) => {
+              CREATE_ROOM(creator, sessionName, members, private, function (res, err) {
+
+                if (err) return res.status(500).json({ status: "error", message: "Something went wrong!", data: null });
+                else {
+                  user.availableSessionCount -= 1 //reduce available session count and save
+                  user.save().then((res) => console.log(res.id + "session -1")).catch((err) => console.log(user._id + "session 0"))
+
+                  return res.status(200).json({
+                    "status": "success",
+                    "message": "Session created successfully.",
+                    "data": res
+                  })
+                }
+
+              })
+            })
+            .catch((err) => {
+              res.status(500).json({
+                "status": "error",
+                "message": "Unable to activate session.",
+                "data": null
+              })
+            })
+        })
+        
+    })
+}
+
 
 /**
  * Start a new session
