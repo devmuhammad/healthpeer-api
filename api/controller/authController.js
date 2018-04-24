@@ -1,6 +1,7 @@
 
     const mongoose = require('mongoose')
     const User = mongoose.model('User')
+    const Schema = mongoose.Schema
     const emailer = require('../../config/mailer')
     const jwt = require('jsonwebtoken');
     const bcrypt = require('bcryptjs');
