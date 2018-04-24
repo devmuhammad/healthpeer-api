@@ -7,7 +7,8 @@ const app             = require('express')()
       ,middleware     = require('./api/middleware/verifyToken')
       ,morgan         = require('morgan')
       ,fs             = require('fs')
-      ,path           = require('path');
+      ,path           = require('path')
+      ,events         = require('./events');
 
 // parse request to JSOn
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -19,6 +20,14 @@ const io = require('socket.io')(server);
 io.listen(config.app.port, () => console.log("App running on port "+config.app.port) );
 
 io.on("connection", function(socket) {
+  //emitters
+  socket.emit("existing threads", events._fetchExistingThreads()) //on user join
+
+  //listeners
+  socket.on("start thread", events.createThread(request, socket))
+  socket.on("update thread", events.updateThread(request, socket))
+  socket.on("delete thread", events.deleteThread(request, socket))
+  socket.on("edit message", events.editMessage(request, socket))
 
 })
 
