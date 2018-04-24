@@ -3,13 +3,7 @@ const app             = require('express')()
       ,config         = require('./config')
       ,dbConfig       = require('./config/database.config')
       ,bodyParser     = require('body-parser')
-      ,User           = require('./api/models/userModel')       //import Models
-      ,medicalInfo    = require('./api/models/medicalInfoModel')
-      ,consultHistory = require('./api/models/consultHistoryModel')
-      ,consultInfo    = require('./api/models/consultInfoModel')
-      ,userRouter     = require('./api/routes/userRoute')         //import routes
-      ,authRouter     = require('./api/routes/authRoute')
-      ,paymentRoute   = require('./api/routes/paymentRoute')
+      ,Routes         = require('./api/routes')
       ,middleware     = require('./api/middleware/verifyToken')
       ,morgan         = require('morgan')
       ,fs             = require('fs')
@@ -19,10 +13,14 @@ const app             = require('express')()
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());  
 
+// websocket
+const server = require('http').Server(app);
+const io = require('socket.io')(server);
+io.listen(config.app.port, () => console.log("App running on port "+config.app.port) );
 
-// log http request
-let httpLogStream = fs.createWriteStream(path.join(__dirname, 'httplogs.log'), {flags: 'a'})    
-app.use(morgan('combined', {stream: httpLogStream}));
+io.on("connection", function(socket) {
+
+})
 
 
 // mongoose connection
@@ -39,19 +37,23 @@ mongoose.connect(dbConfig.url, {
 });
 
 
-//monitor connection    
+//monitor DB connection    
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
 db.on('open', () => { console.log(`Connected to db at ${dbConfig.url}`); }); 
  
 
+// log http request
+let httpLogStream = fs.createWriteStream(path.join(__dirname, 'httplogs.log'), {flags: 'a'})    
+app.use(morgan('combined', {stream: httpLogStream}));
+
+
 //Apply middleware
 app.use(['/user', '/medicalinfo'],middleware)
 // Routes
-app.use("/user", userRouter);
-app.use("/auth", authRouter);
-app.use("/pay", paymentRoute);
+app.use("/user", Routes.user);
+app.use("/auth", Routes.auth);
+app.use("/pay", Routes.payment);
 
 
-app.listen(config.app.port);
-console.log("App running on port "+config.app.port);
+
