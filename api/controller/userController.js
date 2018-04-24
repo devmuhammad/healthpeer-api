@@ -2,7 +2,7 @@
     User = mongoose.model('User')
     medicalInfo = mongoose.model('medicalInfo')
     consultHistory = mongoose.model('consultHistory')
-    var verifyToken = require('./verifyToken');
+    var verifyToken = require('../middleware/verifyToken');
     
     
  exports.userslist = function (req, res){

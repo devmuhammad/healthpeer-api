@@ -1,6 +1,6 @@
 const router = require("express").Router();
 const user_controller = require('../controller/userController');
-var verifyToken = require('../controller/verifyToken');
+var verifyToken = require('../middleware/verifyToken');
 
 // User Routes
     router.get('/getusers', user_controller.userslist); // endpoint for retrieving all users GET

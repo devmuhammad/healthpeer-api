@@ -6,11 +6,15 @@ const app         = require('express')()
       ,User       = require('./api/models/userModel')       //import Models
       ,medicalInfo = require('./api/models/medicalInfoModel')
       ,consultHistory = require('./api/models/consultHistoryModel')
-      ,consultInfo = require('./api/models/consultInfoModel')
+      ,payment    = require('./api/models/paymentModel')
+      ,consultantTransaction = require('./api/models/transactionModel')
+      ,session  = require('./api/models/session')
+      ,bloodBank = require('./api/models/bloodBank')
       ,userRouter = require('./api/routes/userRoute')         //import routes
       ,authRouter = require('./api/routes/authRoute')
       ,paymentRoute = require('./api/routes/paymentRoute')
-      ,middleware = require('./api/controller/verifyToken')
+      ,sessionRoute = require('./api/routes/session')
+      ,middleware = require('./api/middleware/verifyToken')
       ,morgan = require('morgan')
       ,fs = require('fs')
       ,path = require('path');
@@ -43,6 +47,7 @@ app.use(['/user', '/medicalinfo'],middleware)
 app.use("/user", userRouter);
 app.use("/auth", authRouter);
 app.use("/pay", paymentRoute);
+app.use("/session", sessionRoute);
 
 
 app.listen(config.app.port);

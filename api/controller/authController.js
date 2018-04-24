@@ -5,7 +5,7 @@
     const jwt = require('jsonwebtoken');
     const bcrypt = require('bcryptjs');
     const config = require('../../config');
-    const verifyToken = require('./verifyToken');
+    const verifyToken = require('../middleware/verifyToken');
     const uuidv4 = require('uuid/v4');
     const uuidv3 = require('uuid/v3');
     const {CREATE_USER} = require('../../services/pusherService');

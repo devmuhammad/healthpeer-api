@@ -16,7 +16,7 @@ const  AccountToAccount        = require('./AccountTransfers/AccountToAccount')
       ,CardToWallet            = require('./WalletFunding/CardToWallet')
       ,PayWithInternetBanking  = require('./WalletFunding/PayWithInternetBanking')
       ,BulkWalletToAccoutTransfer = require('./WalletTransfers/BulkWalletToAccount')
-      ,WalletToAccoutTransfer     = require('./WalletTransfers/WalletToAccoutTransfer') 
+      ,WalletToAccoutTransfer     = require('./WalletTransfers/WalletToAccountTransfer') 
       ,WalletToWallet             = require('./WalletTransfers/WalletToWallet');
 
 module.exports = {

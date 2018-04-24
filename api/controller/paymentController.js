@@ -1,13 +1,16 @@
-
-User = mongoose.model('User')
-config = require('../../config/index')
-const moneywave = require('../../services/paymentService')(config.moneywave.apiKey,config.moneywave.secret);
-consultantTransaction = mongoose.model('consultantTransaction')
+const mongoose       = require('mongoose')
+const   User = mongoose.model('User')
+const   config = require('../../config/index')
+const   moneywave = require('../../services/paymentService')(config.moneywave.apiKey,config.moneywave.secret)
+const   consultantTransaction = mongoose.model('consultantTransaction')
 
 exports.makeWithdrawal = function (req, res){
     User.findById(req.body.userId, function(err, user){
         if (err) { return res.status(500).json({status:"error", message:"DB_ERROR"});}
     if (user){
+        let refnum = Math.floor(Math.random()*90000) + 10000;
+        let hpRef = 'HPWD'+refnum
+        console.log(hpRef)
         let body = {
             'lock': config.moneywave.lock,
             'amount': req.body.amount, 
@@ -15,7 +18,7 @@ exports.makeWithdrawal = function (req, res){
             'accountNumber': req.body.accountNumber, 
             'currency': "NGN", 
             'senderName': "HealthPeer NG", 
-            'ref':"KFKJ09090",
+            'ref': hpRef,
         }
         if (req.body.amount >= user.balance){
             return res.status(404).json({status:"error", message:"Insufficient Balance"})
@@ -51,8 +54,13 @@ exports.makeWithdrawal = function (req, res){
     };
     
 });
-}
+};
 
+/**
+ * Endpoint for listing Banks
+ * @param {*} req
+ * @param {} res
+ */
 exports.listBank = function (req, res){
     moneywave.Banks.get(function (err, banks){
         if (err) { return res.status(500).json({status:"error", message:"Problem contacting Moneywave Server"});}
@@ -63,6 +71,11 @@ exports.listBank = function (req, res){
     })
 };
 
+/**
+ * Endpoint for validating account Number
+ * @param {accountnumber,bankcode} req
+ * @param {} res
+ */
 exports.validateAccountNumber = function(req, res){
 let body = {
     'account_number': req.body.accountnumber,
@@ -76,7 +89,11 @@ moneywave.ValidateAccountNumber.validate(body, function(err, acctinfo){
 
 });
 };
-
+/**
+ * Endpoint for for getting Total charge
+ * @param {amount,fee} req
+ * @param {} res
+ */
 exports.getTotalCardCharge = function(req, res){
     let body = {
         'amount': req.body.amount,
@@ -113,3 +130,28 @@ exports.RetryFailedTransaction = function(req, res){
     });
 
 };
+
+/**
+ * Endpoint for creating Sub wallet
+ * @param {name,password} req
+ * @param {} res
+ */
+exports.createSubWallet = function(req, res){
+    let body = {
+        "name": req.body.name,
+        "lock_code": req.body.password,
+        "user_ref": "1",
+        "currency": "NGN"
+    }
+    moneywave.CreateSubwallet.create(body, function(err, subwallet){
+        
+        if (err) { return res.status(500).json({status:"error", message:"Problem contacting Moneywave Server"});}
+        if (subwallet.status === 'success' ){
+            return res.status(200).json({status:"success", message:"Sub-Wallet Successfully Created", data:subwallet.data});
+        }
+        if (subwallet.status === 'error' ){
+            { return res.status(401).json({status:"error", message:"Could not create sub wallet"});}
+        }
+    });
+
+}

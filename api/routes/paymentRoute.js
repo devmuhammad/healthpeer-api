@@ -6,6 +6,8 @@ const pay_controller = require('../controller/paymentController');
     
     router.get('/banklist',  pay_controller.listBank); //endpoint for listing banks GET
     
+    router.post('/subwallet/create', pay_controller.createSubWallet) // ndpoint for creating subwallet POST
+    
     router.post('/totalcharge',  pay_controller.getTotalCardCharge); //endpoint for getting total charges to be paid POST 
    
     router.post('/retrytransaction', pay_controller.RetryFailedTransaction);  //endpoint for retrying Failed transactions POST
