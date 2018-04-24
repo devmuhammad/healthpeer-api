@@ -488,7 +488,7 @@ exports.activateSession = function (req, res) {
       User.find({
         accountType: "consultant",
         availability: true,
-        consultationType: {$in: ["general", req.body.consultationType]}
+        consultationType: {$in: ["General", req.body.consultationType]}
       })
       .sort({totalSessions: 1})
       .exec(function(err, consultants) {
@@ -504,6 +504,7 @@ exports.activateSession = function (req, res) {
             //create the session and save
             let newSession = new Session()
             newSession.name = sessionName
+            newSession.sessionType = req.body.consultationType
             newSession.members.patient = members[0]
             newSession.members.consultant = members[1]
 
@@ -584,4 +585,14 @@ exports.endSession = function (req, res) {
           })
         })
     })
+}
+
+
+/**
+ * List types of session available [GET]
+ * @param {*} req 
+ * @param {*} res 
+ */
+exports.listSessionType = function (req, res) {
+
 }
