@@ -6,8 +6,11 @@
 const request         = require('request')
       ,root            = 'https://moneywave.herokuapp.com'
       ,getAccessToken  = require('./authentication/GetAccessToken')
-      ,utils           = require('./utils/index');
+      ,utils           = require('./utils/index')
+      ,config          = require('../../config/index');
 
+      let apiKey = config.moneywave.apiKey
+      let secret = config.moneywave.secret
 function Moneywave(apiKey, secret)
 {
   if(!(this instanceof Moneywave)){ return new Moneywave(apiKey, secret); }

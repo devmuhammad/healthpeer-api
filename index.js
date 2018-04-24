@@ -60,9 +60,10 @@ app.use(morgan('combined', {stream: httpLogStream}));
 //Apply middleware
 app.use(['/user', '/medicalinfo'],middleware)
 // Routes
-app.use("/user", Routes.user);
-app.use("/auth", Routes.auth);
-app.use("/pay", Routes.payment);
+app.use("/user", userRouter);
+app.use("/auth", authRouter);
+app.use("/pay", paymentRoute);
+app.use("/session", sessionRoute);
 
 
 

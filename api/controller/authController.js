@@ -1,11 +1,12 @@
 
     const mongoose = require('mongoose')
     const User = mongoose.model('User')
+    const Schema = mongoose.Schema
     const emailer = require('../../config/mailer')
     const jwt = require('jsonwebtoken');
     const bcrypt = require('bcryptjs');
     const config = require('../../config');
-    const verifyToken = require('./verifyToken');
+    const verifyToken = require('../middleware/verifyToken');
     const uuidv4 = require('uuid/v4');
     const uuidv3 = require('uuid/v3');
     const {CREATE_USER} = require('../../services/pusherService');
@@ -56,6 +57,7 @@ exports.signedHeader = (function (req, res){
     if (req.body.accountType === 'patient')
     {
       User.schema.add({'accountType':{type:String}});
+      User.schema.add({'payments':[{type: Schema.Types.ObjectId, ref:'paymentModel'}]});
       let newUser = new User (req.body);
       let hashedPassword = bcrypt.hashSync(newUser.password, 8);
   
@@ -87,7 +89,7 @@ exports.signedHeader = (function (req, res){
       User.schema.add({'folioNumber':{type:String}});
       User.schema.add({'yofPractice':{type:String}});
       User.schema.add({'currentJob':{type:String}});
-      
+
       let newUser = new User (req.body);
       let hashedPassword = bcrypt.hashSync(newUser.password, 8);
       if (!newUser) return res.status(400).json({status:"error", message:"Empty or Incomplete Parameters for New User "});
