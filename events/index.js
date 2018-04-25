@@ -1,4 +1,5 @@
-const Thread = require('mongoose').model('Thread');
+const Thread = require('../api/models').Thread,
+      redisCache = require('redis').createClient()
 
 /**
  * Start a thread
