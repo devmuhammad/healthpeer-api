@@ -57,7 +57,7 @@ exports.signedHeader = (function (req, res){
     if (req.body.accountType === 'patient')
     {
       User.schema.add({'accountType':{type:String}});
-      User.schema.add({'payments':[{type: Schema.Types.ObjectId, ref:'paymentModel'}]});
+      User.schema.add({'payments':[{type: [Schema.Types.ObjectId], ref:'paymentModel'}]});
       let newUser = new User (req.body);
       let hashedPassword = bcrypt.hashSync(newUser.password, 8);
   

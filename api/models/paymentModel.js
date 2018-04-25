@@ -2,7 +2,7 @@
 var mongoose = require ('mongoose');
 var Schema = mongoose.Schema
 
-var userPaymentSchema = new Schema ([{
+var userPaymentSchema = new Schema ({
 
     userId:{type:String},
     userName:{type:String},
@@ -19,7 +19,7 @@ var userPaymentSchema = new Schema ([{
     responseCode:{type:String},
     responseMsg:{type:String},
 
-}],{
+},{
     timestamps: true
   });
   

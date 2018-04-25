@@ -38,7 +38,8 @@ exports.subscribeWithCard = function(req, res){
       'redirecturl':'', // endpoint to save transaction details
       'medium': req.body.requestmedium,
   }
-  let payInfo = new Payment({
+ 
+  let payInfo = {
     userId: user._id,
     userName: user.userName,
     email: user.email,
@@ -47,11 +48,13 @@ exports.subscribeWithCard = function(req, res){
     payStatus: "Started",
     amount : req.body.amount,
     chargeMethod: ""      
-  })
+  }
   
-  payInfo.save( function(err, paystat){
+  let paymentInfo = new Payment(payInfo)
+  paymentInfo.save( function(err, paystat){
     console.log(paystat)
     if (err) { return res.status(500).json({status:"error", message:"Problem saving pay Info"});}
+    
     if (paystat){
       User.findByIdAndUpdate(user._id, { $push :{payments : paystat._id}},{new:true}, function(err, updatepay){
         
