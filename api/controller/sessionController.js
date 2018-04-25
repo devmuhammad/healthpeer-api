@@ -38,19 +38,19 @@ exports.subscribeWithCard = function(req, res){
       'redirecturl':'', // endpoint to save transaction details
       'medium': req.body.requestmedium,
   }
-  let payInfo = {
-    'userId': user._id,
-    'userName': user.userName,
-    'email': user.email,
-    'phoneNumber': user.phoneNumber,
-    'quantity': req.body.quantity,
-    'payStatus': "Started",
-    'amount' : req.body.amount,
-    'chargeMethod': ""      
-  }
-  let paymentInfo = new Payment(payInfo)
-  console.log(payInfo)
-  paymentInfo.save( function(err, paystat){
+  let payInfo = new Payment({
+    userId: user._id,
+    userName: user.userName,
+    email: user.email,
+    phoneNumber: user.phoneNumber,
+    quantity: req.body.quantity,
+    payStatus: "Started",
+    amount : req.body.amount,
+    chargeMethod: ""      
+  })
+  let paymentInfo = (payInfo)
+  
+  payInfo.save( function(err, paystat){
     console.log(paystat)
     if (err) { return res.status(500).json({status:"error", message:"Problem saving pay Info"});}
     if (paystat){
@@ -68,14 +68,14 @@ exports.subscribeWithCard = function(req, res){
           if (trfinfo.status === 'error')   {return res.status(404).json({status:"error", message:trfinfo.code})}
           if (trfinfo.status === 'success') { 
             let newPayUpdate = {
-              'uniqueRef' : trfinfo.data.transfer.flutterChargeReference,
-              'responseCode': trfinfo.data.transfer.flutterChargeResponseCode,
-              'responseMsg': trfinfo.data.transfer.flutterChargeResponseMessage,
-              'bankCode': trfinfo.data.transfer.account.bankCode,
-              'accountNumber': trfinfo.data.transfer.account.accountNumber,
-              'accountName': trfinfo.data.transfer.account.accountName,
-              'payStatus': 'Pending',
-              'chargeMethod': trinfo.data.transfer.meta.chargeMethod
+              uniqueRef : trfinfo.data.transfer.flutterChargeReference,
+              responseCode: trfinfo.data.transfer.flutterChargeResponseCode,
+              responseMsg: trfinfo.data.transfer.flutterChargeResponseMessage,
+              bankCode: trfinfo.data.transfer.account.bankCode,
+              accountNumber: trfinfo.data.transfer.account.accountNumber,
+              accountName: trfinfo.data.transfer.account.accountName,
+              payStatus: 'Pending',
+              chargeMethod: trinfo.data.transfer.meta.chargeMethod
             }
       Payment.findByIdAndUpdate(paystat._id, newPayUpdate, function (err,  newupdatepay){
         if (err) { return res.status(500).json({status:"error", message:"Problem updating payment Info"});}
@@ -92,14 +92,14 @@ exports.subscribeWithCard = function(req, res){
       if (trfinfo.status === 'error')   {return res.status(404).json({status:"error", message:trfinfo.code})}
       if (trfinfo.status === 'success') { 
         let newPayUpdate = {
-          'uniqueRef' : trfinfo.data.transfer.flutterChargeReference,
-          'responseCode': trfinfo.data.transfer.flutterChargeResponseCode,
-          'responseMsg': trfinfo.data.transfer.flutterChargeResponseMessage,
-          'bankCode': trfinfo.data.transfer.account.bankCode,
-          'accountNumber': trfinfo.data.transfer.account.accountNumber,
-          'accountName': trfinfo.data.transfer.account.accountName,
-          'payStatus': 'Pending',
-          'chargeMethod': trinfo.data.transfer.meta.chargeMethod
+          uniqueRef : trfinfo.data.transfer.flutterChargeReference,
+              responseCode: trfinfo.data.transfer.flutterChargeResponseCode,
+              responseMsg: trfinfo.data.transfer.flutterChargeResponseMessage,
+              bankCode: trfinfo.data.transfer.account.bankCode,
+              accountNumber: trfinfo.data.transfer.account.accountNumber,
+              accountName: trfinfo.data.transfer.account.accountName,
+              payStatus: 'Pending',
+              chargeMethod: trinfo.data.transfer.meta.chargeMethod
         }
   Payment.findByIdAndUpdate(paystat._id, newPayUpdate, function (err,  newupdatepay){
     if (err) { return res.status(500).json({status:"error", message:"Problem updating payment Info"});}
