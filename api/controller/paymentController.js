@@ -1,8 +1,8 @@
 const mongoose       = require('mongoose')
-const   User = mongoose.model('User')
+const   User =  require('../models').user
 const   config = require('../../config/index')
 const   moneywave = require('../../services/paymentService')(config.moneywave.apiKey,config.moneywave.secret)
-const   consultantTransaction = mongoose.model('consultantTransaction')
+const   consultantTransaction =  require('../models').consultantTransaction
 
 exports.makeWithdrawal = function (req, res){
     User.findById(req.body.userId, function(err, user){

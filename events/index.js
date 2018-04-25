@@ -1,4 +1,4 @@
-const Thread = require('mongoose').model('Thread');
+const Thread =  require('../api/models').thread;
 
 /**
  * Start a thread

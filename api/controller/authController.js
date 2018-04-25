@@ -1,6 +1,6 @@
 
     const mongoose = require('mongoose')
-    const User = mongoose.model('User')
+    const User =  require('../models').user
     const Schema = mongoose.Schema
     const emailer = require('../../config/mailer')
     const jwt = require('jsonwebtoken');

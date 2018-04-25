@@ -1,8 +1,8 @@
 const {CREATE_ROOM}  = require("../../services/pusherService")
 const mongoose       = require('mongoose')
-const User           = mongoose.model('User')
-const Session        = mongoose.model('Session')
-const Payment        = mongoose.model('userPayment')
+const User           =  require('../models').user
+const Session        =  require('../models').session
+const Payment        =  require('../models').payment
 const config         = require('../../config/index')
 const moneywave      = require('../../services/paymentService')(config.moneywave.apiKey,config.moneywave.secret);
 
@@ -48,7 +48,6 @@ exports.subscribeWithCard = function(req, res){
     amount : req.body.amount,
     chargeMethod: ""      
   })
-  let paymentInfo = (payInfo)
   
   payInfo.save( function(err, paystat){
     console.log(paystat)

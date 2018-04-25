@@ -1,7 +1,7 @@
-    var mongoose = require('mongoose')
-    User = mongoose.model('User')
-    medicalInfo = mongoose.model('medicalInfo')
-    consultHistory = mongoose.model('consultHistory')
+    const mongoose = require('mongoose')
+    User = require('../models').user
+    medicalInfo =  require('../models').medicalInfo
+    consultHistory =  require('../models').consultationHistory
     var verifyToken = require('../middleware/verifyToken');
     
     
