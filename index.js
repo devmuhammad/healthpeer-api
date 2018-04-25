@@ -17,11 +17,11 @@ app.use(bodyParser.json());
 // websocket
 const server = require('http').Server(app);
 const io = require('socket.io')(server);
-io.listen(config.app.port, () => console.log("App running on port "+config.app.port) );
+server.listen(config.app.port, () => console.log("App running on port "+config.app.port) );
 
 io.on("connection", function(socket) {
   //emitters
-  socket.emit("existing threads", events._fetchExistingThreads()) //on user join
+  socket.emit("existing threads", events._fetchExistingThreads(socket)) //on user join
 
   //listeners
   socket.on("start thread", events.createThread(request, socket))

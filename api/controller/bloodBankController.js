@@ -1,5 +1,5 @@
-const BloodBank = require('mongoose').model('BloodBank')
-      , User    = require('mongoose').model('User')
+const BloodBank = require('../models').bloodBank
+      , User    = require('../models').user
       , jwt     = require('jsonwebtoken')
       , config  = require('../../config').app;
 

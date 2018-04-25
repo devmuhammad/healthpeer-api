@@ -148,14 +148,14 @@ exports.subscribeWithAccount = function(req, res){
       'medium': req.body.requestmedium,
   }
   let payInfo = new Payment ({
-    'userId': user._id,
-    'userName': user.userName,
-    'email': user.email,
-    'phoneNumber': user.phoneNumber,
-    'quantity': req.body.quantity,
-    'payStatus': "Started",
-    'amount' : req.body.amount,
-    'chargeMethod': "Account"      
+    userId: user._id,
+    userName: user.userName,
+    email: user.email,
+    phoneNumber: user.phoneNumber,
+    quantity: req.body.quantity,
+    payStatus: "Started",
+    amount : req.body.amount,
+    chargeMethod: "Account"      
   })
      payInfo.save( function(err, paystat){
       if (err) { return res.status(500).json({status:"error", message:"Problem saving pay Info"});}

@@ -40,8 +40,8 @@ const editMessage = function (request, socket) {
 /**
  * Fetch thread on user connected
  */
-const _fetchExistingThreads = function () {
-
+const _fetchExistingThreads = function (socket) {
+  console.log("event emitted")
 };
 
 module.exports = {
