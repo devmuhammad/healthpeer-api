@@ -202,73 +202,97 @@ exports.subscribeWithAccount = function(req, res){
  * @param {*} res 
  */
 exports.subscribeWithInternetPay = function(req, res){
-  User.findById(req.body.userId, function(err, user){
-      if (err) { return res.status(500).json({status:"error", message:"DB_ERROR"});}
-  if (user){
-    let firstname = user.firstName;
-    let lastname = user.lastName;
-    let phonenumber = user.phoneNumber;
-    let email = user.email
-  let body = {
-      'firstname': firstname, 
-      'lastname': lastname,
-      'phonenumber': phonenumber, 
-      'email': email, 
-      'recipient': "wallet", 
-      'charge_with': "ext_account", 
-      'charge_auth': "INTERNETBANKING",
-      'sender_bank': req.body.bank, 
-      'apiKey': config.moneywave.apiKey, 
-      'amount': req.body.amount, 
-      'fee':0, 
-      'redirecturl':'', // endpoint to save transaction details
-      'medium': req.body.requestmedium,
-  }
-    let payInfo = new Payment ({
-      'userId': user._id,
-      'userName': user.userName,
-      'email': user.email,
-      'phoneNumber': user.phoneNumber,
-      'quantity': req.body.quantity,
-      'payStatus': "Started",
-      'amount' : req.body.amount,
-      'chargeMethod': "Internet Banking"      
-    })
-       payInfo.save( function(err, paystat){
-        if (err) { return res.status(500).json({status:"error", message:"Problem saving pay Info"});}
-        if (paystat){
-          User.findByIdAndUpdate(user._id, { $push :{payments : paystat._id}},{new:true}, function(err, updatepay){
-            if (err) { return res.status(500).json({status:"error", message:"Problem updating pay Info"});}
-            if (updatepay){
-              let payId = paystat._id;
-               body.redirecturl = '/session/updatestatus/'+payId
-            moneywave.PayWithInternetBanking.transfer(body, function(err, trfinfo){
-                if (err) { return res.status(500).json({status:"error", message:"Problem contacting Moneywave Server"});}
-              if (trfinfo.status === 'error')   {return res.status(404).json({status:"error", message:trfinfo.code})}
-              if (trfinfo.status === 'success') { 
-                let newPayUpdate = {
-                  'uniqueRef' : trfinfo.data.transfer.flutterChargeReference,
-                  'responseCode': trfinfo.data.transfer.flutterChargeResponseCode,
-                  'responseMsg': trfinfo.data.transfer.flutterChargeResponseMessage,
-                  'bankCode': trfinfo.data.transfer.account.bankCode,
-                  'accountNumber': trfinfo.data.transfer.account.accountNumber,
-                  'accountName': trfinfo.data.transfer.account.accountName,
-                  'payStatus': 'Pending'
-                }
-          Payment.findByIdAndUpdate(paystat._id, newPayUpdate, function (err,  newupdatepay){
-            if (err) { return res.status(500).json({status:"error", message:"Problem updating payment Info"});}
-            if (newupdatepay) { return res.status(200).json({status:"success", message:" Update Successful", data:newupdatepay});}
 
-          })
-                return res.status(200).json({status:"success", message:"transaction Successful, Pending Final Validation -  Redirecting ..."});}
+    //FIND USER THAT NEEDS SUBSCRIPTION
+    User.findById(req.body.userId, function(err, user) {
+
+      if (err) { return res.status(500).json({status:"error", message:"DB_ERROR"});}
+
+      if (user) {
+        let firstname = user.firstName;
+        let lastname = user.lastName;
+        let phonenumber = user.phoneNumber;
+        let email = user.email;
+
+        //MONEYWAVE PARAMS
+        let body = {
+          'firstname': firstname,
+          'lastname': lastname,
+          'phonenumber': phonenumber,
+          'email': email,
+          'recipient': "wallet",
+          'charge_with': "ext_account",
+          'charge_auth': "INTERNETBANKING",
+          'sender_bank': req.body.bank,
+          'apiKey': config.moneywave.apiKey,
+          'amount': req.body.amount,
+          'fee': 0,
+          'redirecturl': '', // endpoint to save transaction details
+          'medium': req.body.requestmedium,
+        }
+
+        //HEALTHPEER PARAMS
+        let payInfo = new Payment({
+          'userId': user._id,
+          'userName': user.userName,
+          'email': user.email,
+          'phoneNumber': user.phoneNumber,
+          'quantity': req.body.quantity,
+          'payStatus': "Started",
+          'amount': req.body.amount,
+          'chargeMethod': "Internet Banking"
+        })
+
+        //SAVE TRANSACTION DETAILS
+        payInfo.save(function (err, paystat) {
+          if (err) { return res.status(500).json({ status: "error", message: "Problem saving pay Info" }); }
+
+          if (paystat) {
+            User.findByIdAndUpdate(user._id, { $push: { payments: paystat._id } }, { new: true }, function (err, updatepay) {
+
+              if (err) { return res.status(500).json({ status: "error", message: "Problem updating pay Info" }); }
+
+              if (updatepay) {
+                let payId = paystat._id;
+                body.redirecturl = '/session/updatestatus/' + payId
+
+                // SEND HTTP REQUEST TO MONEYWAVE
+                moneywave.PayWithInternetBanking.transfer(body, function (err, trfinfo) {
+                  if (err) { return res.status(500).json({ status: "error", message: "Problem contacting Moneywave Server" }); }
+                  if (trfinfo.status === 'error') { return res.status(404).json({ status: "error", message: trfinfo.code }) }
+
+                  //IF TRANSACTION IS SUCCESSFULL
+                  if (trfinfo.status === 'success') {
+                    let newPayUpdate = {
+                      'uniqueRef': trfinfo.data.transfer.flutterChargeReference,
+                      'responseCode': trfinfo.data.transfer.flutterChargeResponseCode,
+                      'responseMsg': trfinfo.data.transfer.flutterChargeResponseMessage,
+                      'bankCode': trfinfo.data.transfer.account.bankCode,
+                      'accountNumber': trfinfo.data.transfer.account.accountNumber,
+                      'accountName': trfinfo.data.transfer.account.accountName,
+                      'payStatus': 'PENDING VALIDATION'
+                    }
+
+                    Payment.findByIdAndUpdate(paystat._id, newPayUpdate, function (err, newupdatepay) {
+                      if (err) { return res.status(500).json({ status: "error", message: "Problem updating payment Info" }); }
+                      if (newupdatepay) { return res.status(200).json({ status: "success", message: " Update Successful", data: newupdatepay }); }
+
+                    })
+
+                    return res.status(200).json({ 
+                      status: "success", 
+                      message: "transaction Successful, Pending Final Validation -  Redirecting ..." 
+                    });
+                  }
+                })
+
+              }
 
             })
-            }
-          })
-        }
-       })
-}
-})
+          }
+        })
+      }
+    })
 };
 
 
@@ -369,10 +393,10 @@ const offlineActivation = function (req, res) {
     .exec(function (err, consultants) {
 
         let selectedConsultant = consultants[0]._id
-        let creator = req.body.requestedBy
+        let creator      = req.body.requestedBy
             ,sessionName = req.body.patient + "::" + selectedConsultant.username
-            ,members = [user._id, selectedConsultant._id]
-            ,private = true
+            ,members     = [user._id, selectedConsultant._id]
+            ,private     = true
 
         //create the session and save
         let newSession = new Session()
@@ -430,10 +454,10 @@ exports.reactivateSession = function (req, res) {
             if(err) return res.status(500).json({"status":"error", "message": "Something went wrong!"})
             if(!user) return res.status(400).json({"status": "error", "message": "Purchase a session bundle."})
 
-            let creator = req.body.requestedBy
+            let creator      = req.body.requestedBy
                 ,sessionName = prevSession.name
-                ,members = [patient, consultant]
-                ,private = true
+                ,members     = [patient, consultant]
+                ,private     = true
 
             //create the session and save
             let newSession = new Session()
@@ -474,8 +498,8 @@ exports.reactivateSession = function (req, res) {
 
 /**
  * Start a new session
- * @param {id,requestedBy,consultationType} req 
- * @param {JSON} res 
+ * @param {Request} req {id,requestedBy,consultationType}
+ * @param {Response} res JSON
  */
 exports.activateSession = function (req, res) {
   let patient = req.body
