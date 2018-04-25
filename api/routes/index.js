@@ -1,4 +1,4 @@
-const userRouter     = require('./userRoute')         //import routes
+const userRouter      = require('./userRoute')         //import routes
       ,authRouter     = require('./authRoute')
       ,paymentRoute   = require('./paymentRoute')
       ,sessionRoute   = require('./session')

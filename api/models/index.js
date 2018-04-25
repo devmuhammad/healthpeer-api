@@ -6,6 +6,7 @@ const  User           = require('./userModel')       //import Models
       ,userPayment    = require('./paymentModel')
       ,session        = require('./session')
       ,Thread         = require('./thread')
+      ,ThreadMessage  = require('./threadMessages')
       ,BloodBank      = require('./bloodBank')
 
 module.exports = {
@@ -16,6 +17,7 @@ module.exports = {
   consultantTransaction: consultantTransaction,
   payment: userPayment,
   session: session,
-  thread: Thread,
+  Thread: Thread,
+  ThreadMessage: ThreadMessage
   bloodBank: BloodBank
 }

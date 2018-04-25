@@ -17,18 +17,18 @@ app.use(bodyParser.json());
 // websocket
 const server = require('http').Server(app);
 const io = require('socket.io')(server);
-server.listen(config.app.port, () => console.log("App running on port "+config.app.port) );
+server.listen(config.app.port, () => console.log(`App running on port ${config.app.port}`) );
 
 io.on("connection", function(socket) {
   //emitters
-  socket.emit("existing threads", events._fetchExistingThreads(socket)) //on user join
+  socket.emit("existing threads", events._fetchExistingThreads(offset,socket)) //on user join
 
   //listeners
   socket.on("start thread", events.createThread(request, socket))
   socket.on("update thread", events.updateThread(request, socket))
   socket.on("delete thread", events.deleteThread(request, socket))
   socket.on("edit message", events.editMessage(request, socket))
-
+  socket.on("fetch threads", events._fetchExistingThreads(offset,socket))
 })
 
 
@@ -58,7 +58,7 @@ app.use(morgan('combined', {stream: httpLogStream}));
 
 
 //Apply middleware
-app.use(['/user', '/medicalinfo'],middleware)
+app.use(['/user', '/medicalinfo'], middleware)
 // Routes
 app.use("/user", Routes.user);
 app.use("/auth", Routes.auth);
