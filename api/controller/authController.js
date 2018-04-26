@@ -17,7 +17,7 @@
 exports.login = function (req, res){
     let loginUser = new User (req.body);
     
-    User.findOne({ email: loginUser.email}, function(err, user){
+    User.findOne({ $or :[{ email: loginUser.email},{ userName: loginUser.userName }]}, function(err, user){
         if (err) return res.status(500).json({status:"error", message:"DB_ERROR"});
         if (!user) return res.status(401).json({status:"error", message:"Invalid User"});
         
@@ -62,9 +62,10 @@ exports.signedHeader = (function (req, res){
   
       if (!newUser) return res.status(400).json({status:"error", message:"Empty or Incomplete Parameters for New User "});
       
-      User.findOne ({ email : newUser.email }, function(err, user){
+      User.findOne ({ $or :[{ email: loginUser.email},{ userName: loginUser.userName }]}, function(err, user){
          if (err) return res.status(500).json({status:"error", message:"DB ERROR"});
-         if (user) return res.status(401).json({status:"error", message:"Email already exist"}); 
+         if (user.email) return res.status(401).json({status:"error", message:"Email already exist"}); 
+         if (user.userName) return res.status(401).json({status:"error", message:"UserName already exist"});
          newUser.password = hashedPassword
         
          newUser.save( function (err, user){
@@ -93,9 +94,10 @@ exports.signedHeader = (function (req, res){
       let hashedPassword = bcrypt.hashSync(newUser.password, 8);
       if (!newUser) return res.status(400).json({status:"error", message:"Empty or Incomplete Parameters for New User "});
       
-      User.findOne ({ email : newUser.email }, function(err, user){
-         if (err) return res.status(500).json({status:"error", message:"DB ERROR"});
-         if (user) return res.status(401).json({status:"error", message:"Email already exist"}); 
+      User.findOne ({ $or :[{ email: loginUser.email},{ userName: loginUser.userName }]}, function(err, user){
+        if (err) return res.status(500).json({status:"error", message:"DB ERROR"});
+        if (user.email) return res.status(401).json({status:"error", message:"Email already exist"}); 
+        if (user.userName) return res.status(401).json({status:"error", message:"UserName already exist"});
          
          newUser.password = hashedPassword;
          newUser.balance = 0;

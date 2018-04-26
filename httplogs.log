@@ -133,3 +133,5 @@
 ::1 - - [26/Apr/2018:17:31:28 +0000] "POST /pay/withdraw HTTP/1.1" - - "-" "PostmanRuntime/7.1.1"
 ::1 - - [26/Apr/2018:17:46:04 +0000] "POST /pay/withdraw HTTP/1.1" 404 51 "-" "PostmanRuntime/7.1.1"
 ::1 - - [26/Apr/2018:17:50:29 +0000] "POST /pay/withdraw HTTP/1.1" 400 137 "-" "PostmanRuntime/7.1.1"
+::1 - - [26/Apr/2018:18:11:10 +0000] "POST /auth/login HTTP/1.1" 200 214 "-" "PostmanRuntime/7.1.1"
+::1 - - [26/Apr/2018:18:11:16 +0000] "POST /auth/login HTTP/1.1" 200 214 "-" "PostmanRuntime/7.1.1"
