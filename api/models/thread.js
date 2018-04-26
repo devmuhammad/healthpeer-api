@@ -1,6 +1,6 @@
 const mongoose = require ('mongoose');
 const Schema = mongoose.Schema;
-const threadMessage = require('./threadMessages')
+const ThreadMessage = require('./threadMessages')
 
 let threadSchema = new Schema({
   threadOwner: { type: Schema.Types.ObjectId, required: true},

@@ -19,7 +19,7 @@
 exports.login = function (req, res){
     let loginUser = new User (req.body);
     
-    User.findOne({ email: loginUser.email}, function(err, user){
+    User.findOne({ $or :[{ email: loginUser.email},{ userName: loginUser.userName }]}, function(err, user){
         if (err) return res.status(500).json({status:"error", message:"DB_ERROR"});
         if (!user) return res.status(401).json({status:"error", message:"Invalid User"});
         
@@ -66,24 +66,24 @@ exports.signedHeader = (function (req, res){
   
       if (!newUser) return res.status(400).json({status:"error", message:"Empty or Incomplete Parameters for New User "});
       
-      User.findOne ({ email : newUser.email }, function(err, user){
-         if (err) return res.status(500).json({ status:"error", message:"DB ERROR", debug: err });
-         if (user) return res.status(401).json({status:"error", message:"Email already exist"}); 
+      User.findOne ({ $or :[{ email: loginUser.email},{ userName: loginUser.userName }]}, function(err, user){
+         if (err) return res.status(500).json({status:"error", message:"DB ERROR"});
+         if (user.email) return res.status(401).json({status:"error", message:"Email already exist"}); 
+         if (user.userName) return res.status(401).json({status:"error", message:"UserName already exist"});
          newUser.password = hashedPassword
         
          newUser.save( function (err, user){
           if (err) return res.status(500).json({status:"error", message:"There was a problem adding the info to the DB", debug: err});
           
            //create a token
-            let token = jwt.sign({ id : user._id }, config.app.secret, {
-              expiresIn: 86400 // expires in 24hours
-            })
-            CREATE_USER(user._id, function(res, err){
-                
-            })
-
-            res.status(200).json({status:"success", message:"Users added successfully",data:user});
-         })
+           let token = jwt.sign({ id : user._id }, config.app.secret, {
+            expiresIn: 86400 // expires in 24hours
+        })
+        CREATE_USER(user._id, function(res, err){
+            
+        })
+        res.status(200).json({status:"success", message:"Users added successfully",data:user});
+      })
       
    });
   } else if (req.body.accountType === 'Consultant'){
@@ -98,9 +98,10 @@ exports.signedHeader = (function (req, res){
       let hashedPassword = bcrypt.hashSync(newUser.password, 8);
       if (!newUser) return res.status(400).json({status:"error", message:"Empty or Incomplete Parameters for New User "});
       
-      User.findOne ({ email : newUser.email }, function(err, user){
-         if (err) return res.status(500).json({status:"error", message:"DB ERROR"});
-         if (user) return res.status(401).json({status:"error", message:"Email already exist"}); 
+      User.findOne ({ $or :[{ email: loginUser.email},{ userName: loginUser.userName }]}, function(err, user){
+        if (err) return res.status(500).json({status:"error", message:"DB ERROR"});
+        if (user.email) return res.status(401).json({status:"error", message:"Email already exist"}); 
+        if (user.userName) return res.status(401).json({status:"error", message:"UserName already exist"});
          
          newUser.password = hashedPassword;
          //newUser.balance = 0;
