@@ -12,4 +12,4 @@ let bloodBankSchema = new Schema({
   patientName: { type: String, required: false }
 }, { timestamps:true });
 
-module.exports = mongoose.model("BloodGroup", bloodBankSchema)
+module.exports = mongoose.model("BloodBank", bloodBankSchema)

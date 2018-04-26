@@ -1,6 +1,8 @@
 
     const mongoose = require('mongoose')
     const User =  require('../models').user
+    const Patient = require('../models').Patient
+    const Consultant = require('../models').Consultant
     const Schema = mongoose.Schema
     const emailer = require('../../config/mailer')
     const jwt = require('jsonwebtoken');
@@ -54,43 +56,45 @@ exports.signedHeader = (function (req, res){
  
  //Sign Up/Register Method
  exports.register = function (req, res){
-    if (req.body.accountType === 'patient')
+    if (req.body.accountType === 'Patient')
     {
-      User.schema.add({'accountType':{type:String}});
-      User.schema.add({'payments':[{type: Schema.Types.ObjectId, ref:'paymentModel'}]});
-      let newUser = new User (req.body);
+      //User.schema.add({'accountType':{type:String}});
+      //User.schema.add({'payments':[{type: Schema.Types.ObjectId, ref:'paymentModel'}]});
+
+      let newUser = new Patient (req.body);
       let hashedPassword = bcrypt.hashSync(newUser.password, 8);
   
       if (!newUser) return res.status(400).json({status:"error", message:"Empty or Incomplete Parameters for New User "});
       
       User.findOne ({ email : newUser.email }, function(err, user){
-         if (err) return res.status(500).json({status:"error", message:"DB ERROR"});
+         if (err) return res.status(500).json({ status:"error", message:"DB ERROR", debug: err });
          if (user) return res.status(401).json({status:"error", message:"Email already exist"}); 
          newUser.password = hashedPassword
         
          newUser.save( function (err, user){
-          if (err) return res.status(500).json({status:"error", message:"There was a problem adding the info to the DB"});
+          if (err) return res.status(500).json({status:"error", message:"There was a problem adding the info to the DB", debug: err});
           
            //create a token
-           let token = jwt.sign({ id : user._id }, config.app.secret, {
-            expiresIn: 86400 // expires in 24hours
-        })
-        CREATE_USER(user._id, function(res, err){
-            
-        })
-        res.status(200).json({status:"success", message:"Users added successfully",data:user});
-      })
+            let token = jwt.sign({ id : user._id }, config.app.secret, {
+              expiresIn: 86400 // expires in 24hours
+            })
+            CREATE_USER(user._id, function(res, err){
+                
+            })
+
+            res.status(200).json({status:"success", message:"Users added successfully",data:user});
+         })
       
    });
-  } else if (req.body.accountType === 'consultant'){
-      User.schema.add({'accountType':{type:String}});
-      User.schema.add({'balance':{type:String}});
-      User.schema.add({'speciality':{type:String}});
-      User.schema.add({'folioNumber':{type:String}});
-      User.schema.add({'yofPractice':{type:String}});
-      User.schema.add({'currentJob':{type:String}});
+  } else if (req.body.accountType === 'Consultant'){
+      //User.schema.add({'accountType':{type:String}});
+     // User.schema.add({'balance':{type:String}});
+      //User.schema.add({'speciality':{type:String}});
+      //User.schema.add({'folioNumber':{type:String}});
+      //User.schema.add({'yofPractice':{type:String}});
+      //User.schema.add({'currentJob':{type:String}});
 
-      let newUser = new User (req.body);
+      let newUser = new Consultant (req.body);
       let hashedPassword = bcrypt.hashSync(newUser.password, 8);
       if (!newUser) return res.status(400).json({status:"error", message:"Empty or Incomplete Parameters for New User "});
       
@@ -99,7 +103,7 @@ exports.signedHeader = (function (req, res){
          if (user) return res.status(401).json({status:"error", message:"Email already exist"}); 
          
          newUser.password = hashedPassword;
-         newUser.balance = 0;
+         //newUser.balance = 0;
          newUser.save( function (err, user){
           if (err) return res.status(500).json({status:"error", message:"There was a problem adding the info to the DB"});
           
