@@ -9,7 +9,7 @@ const moneywave      = require('../../services/paymentService')(config.moneywave
 
 /**
  * Buy a session (using debit card)
- * @param {*} req 
+ * @param {JSON:{amount, card_no, pin, cvv, userId, phoneNumber, quantity, expiry_month, expiry_year, requestmedium}}  
  * @param {*} res 
  */
 exports.subscribeWithCard = function(req, res){
@@ -18,12 +18,14 @@ exports.subscribeWithCard = function(req, res){
   if (user){
      let firstname = user.firstName;
      let lastname = user.lastName;
-     let phonenumber = user.phoneNumber;
+    // let phonenumber = user.phoneNumber;
      let email = user.email
+
+//MONEYWAVE PARAMS
   let body = {
       'firstname': firstname, 
       'lastname': lastname,
-      'phonenumber':phonenumber, 
+      'phonenumber': req.body.phoneNumber, 
       'email': email, 
       'recipient': "wallet", 
       'card_no': req.body.card_no, 
@@ -38,76 +40,98 @@ exports.subscribeWithCard = function(req, res){
       'redirecturl':'', // endpoint to save transaction details
       'medium': req.body.requestmedium,
   }
+
+ //HEALTHPEER PARAMS
   let payInfo = new Payment({
     userId: user._id,
     userName: user.userName,
     email: user.email,
-    phoneNumber: user.phoneNumber,
+    phoneNumber: req.body.phoneNumber,
     quantity: req.body.quantity,
     payStatus: "Started",
     amount : req.body.amount,
-    chargeMethod: ""      
+    // chargeMethod: ""      
   })
   
+  //SAVE TRANSACTION DETAILS
   payInfo.save( function(err, paystat){
-    console.log(paystat)
+    
     if (err) { return res.status(500).json({status:"error", message:"Problem saving pay Info"});}
+    
     if (paystat){
-      User.findByIdAndUpdate(user._id, { $push :{payments : paystat._id}},{new:true}, function(err, updatepay){
+      
+      user.payments.push(paystat._id)
+      
+      user.save(function(err, updatepay){
         
         if (err) { return res.status(500).json({status:"error", message:"Problem updating pay Info"});}
-       
+        
         if (updatepay){
           let payId = paystat._id;
            body.redirecturl = 'http://localhost:6990/session/confirmcardpayment/'+payId;
 
+            // SEND HTTP REQUEST TO MONEYWAVE for Local Cards
   if(req.body.pin){
       moneywave.CardToWallet.chargeLocalCard(body, function(err, trfinfo){
-          if (err) { return res.status(500).json({status:"error", message:"Problem contacting Moneywave Server"});}
-          if (trfinfo.status === 'error')   {return res.status(404).json({status:"error", message:trfinfo.code})}
+         
+        if (err) { return res.status(500).json({status:"error", message:"Problem contacting Moneywave Server"});}
+          
+        if (trfinfo.status === 'error')   {return res.status(404).json({status:"error", message:trfinfo.code, msg:trfinfo.message,data:trfinfo.data})}
           if (trfinfo.status === 'success') { 
             let newPayUpdate = {
               uniqueRef : trfinfo.data.transfer.flutterChargeReference,
               responseCode: trfinfo.data.transfer.flutterChargeResponseCode,
               responseMsg: trfinfo.data.transfer.flutterChargeResponseMessage,
-              bankCode: trfinfo.data.transfer.account.bankCode,
-              accountNumber: trfinfo.data.transfer.account.accountNumber,
-              accountName: trfinfo.data.transfer.account.accountName,
+              cardId: trfinfo.data.transfer.cardId,
+             // bankCode: trfinfo.data.transfer.account.bankCode,
+             // accountNumber: trfinfo.data.transfer.account.accountNumber,
+             // accountName: trfinfo.data.transfer.account.accountName,
+              amountCharged:trfinfo.data.transfer.netDebitAmount,
+              medium:trfinfo.data.transfer.medium,
+              ipAddress:trfinfo.data.transfer.ip,
               payStatus: 'Pending',
-              chargeMethod: trinfo.data.transfer.meta.chargeMethod
+             chargeMethod: trfinfo.data.chargeMethod
             }
+            
       Payment.findByIdAndUpdate(paystat._id, newPayUpdate, function (err,  newupdatepay){
+       
         if (err) { return res.status(500).json({status:"error", message:"Problem updating payment Info"});}
-        if (newupdatepay) { return res.status(200).json({status:"success", message:" Update Successful", data:newupdatepay});}
-      
-  })
+        if (newupdatepay) //{ return res.status(200).json({status:"success", message:" Update Successful", data:newupdatepay});}
+        
+        return res.status(200).json({status:"success", message:"transaction Successful, Pending Validation - Redirecting ...", });
+
+      });
           }
-          return res.status(200).json({status:"success", message:"transaction Successful, Pending Validation - Redirecting ...", });
 
 })
+ // SEND HTTP REQUEST TO MONEYWAVE for Other Cards
 } else
   moneywave.CardToWallet.charge(body, function(err, trfinfo){
       if (err) { return res.status(500).json({status:"error", message:"Problem contacting Moneywave Server"});}
-      if (trfinfo.status === 'error')   {return res.status(404).json({status:"error", message:trfinfo.code})}
+      if (trfinfo.status === 'error')   {return res.status(404).json({status:"error", message:trfinfo.code,msg:trfinfo.message,data:trfinfo.data})}
       if (trfinfo.status === 'success') { 
         let newPayUpdate = {
-          uniqueRef : trfinfo.data.transfer.flutterChargeReference,
+              uniqueRef : trfinfo.data.transfer.flutterChargeReference,
               responseCode: trfinfo.data.transfer.flutterChargeResponseCode,
               responseMsg: trfinfo.data.transfer.flutterChargeResponseMessage,
-              bankCode: trfinfo.data.transfer.account.bankCode,
-              accountNumber: trfinfo.data.transfer.account.accountNumber,
-              accountName: trfinfo.data.transfer.account.accountName,
+              cardId: trfinfo.data.transfer.cardId,
+             // bankCode: trfinfo.data.transfer.account.bankCode,
+             // accountNumber: trfinfo.data.transfer.account.accountNumber,
+             // accountName: trfinfo.data.transfer.account.accountName,
+              amountCharged:trfinfo.data.transfer.netDebitAmount,
+              medium:trfinfo.data.transfer.medium,
+              ipAddress:trfinfo.data.transfer.ip,
               payStatus: 'Pending',
-              chargeMethod: trinfo.data.transfer.meta.chargeMethod
+              chargeMethod: trinfo.data.chargeMethod
         }
   Payment.findByIdAndUpdate(paystat._id, newPayUpdate, function (err,  newupdatepay){
     if (err) { return res.status(500).json({status:"error", message:"Problem updating payment Info"});}
-    if (newupdatepay) { return res.status(200).json({status:"success", message:" Update Successful, Redirecting ...", data:newupdatepay});}
+    if (newupdatepay) //{ return res.status(200).json({status:"success", message:" Update Successful, Redirecting ...", data:newupdatepay});}
+    return res.status(200).json({status:"success", message:"transaction Successful, Pending Validation - Redirecting ...", });
 
   })
 }
-    return res.status(200).json({status:"success", message:"transaction Successful, Pending Validation - Redirecting ...", });
-
+   
 })
       
   }
@@ -121,7 +145,7 @@ exports.subscribeWithCard = function(req, res){
 
 /**
  * Buy a session (through account number)
- * @param {*} req 
+ * @param {{JSON:{amount, accountnumber, bank, userId, phoneNumber, quantity, requestmedium}}
  * @param {*} res 
  */
 exports.subscribeWithAccount = function(req, res){
@@ -130,12 +154,14 @@ exports.subscribeWithAccount = function(req, res){
   if (user){
     let firstname = user.firstName;
     let lastname = user.lastName;
-    let phonenumber = user.phoneNumber;
+    //let phonenumber = user.phoneNumber;
     let email = user.email
+
+    //MONEYWAVE PARAMS
   let body = {
       'firstname':firstname, 
       'lastname':lastname,
-      'phonenumber':phonenumber, 
+      'phonenumber': req.body.phoneNumber, 
       'email': email, 
       'recipient': "wallet", 
       'charge_with': "account", 
@@ -147,27 +173,36 @@ exports.subscribeWithAccount = function(req, res){
       'redirecturl':'', // endpoint to save transaction details
       'medium': req.body.requestmedium,
   }
+
+  //HEALTHPEER PARAMS
   let payInfo = new Payment ({
-    'userId': user._id,
-    'userName': user.userName,
-    'email': user.email,
-    'phoneNumber': user.phoneNumber,
-    'quantity': req.body.quantity,
-    'payStatus': "Started",
-    'amount' : req.body.amount,
-    'chargeMethod': "Account"      
+    userId: user._id,
+    userName: user.userName,
+    email: user.email,
+    phoneNumber: req.body.phoneNumber,
+    quantity: req.body.quantity,
+    payStatus: "Started",
+    amount : req.body.amount,
+    chargeMethod: "Account"      
   })
+
+  //SAVE TRANSACTION DETAILS
      payInfo.save( function(err, paystat){
       if (err) { return res.status(500).json({status:"error", message:"Problem saving pay Info"});}
       if (paystat){
-        User.findByIdAndUpdate(user._id, { $push :{payments : paystat._id}},{new:true}, function(err, updatepay){
+        user.payments.push(paystat._id)
+      
+        user.save(function(err, updatepay){          
           if (err) { return res.status(500).json({status:"error", message:"Problem updating pay Info"});}
           if (updatepay){
             let payId = paystat._id;
-             body.redirecturl = '/session/updatestatus/'+payId
+             body.redirecturl = 'http://localhost:6990/session/confirmpayment/'+payId
+
+              // SEND HTTP REQUEST TO MONEYWAVE
           moneywave.AccountToWallet.transfer(body, function(err, trfinfo){
+            
               if (err) { return res.status(500).json({status:"error", message:"Problem contacting Moneywave Server"});}
-            if (trfinfo.status === 'error')   {return res.status(404).json({status:"error", message:trfinfo.code})}
+            if (trfinfo.status === 'error')   {return res.status(404).json({status:"error", message:trfinfo.code,msg:trfinfo.message,data:trfinfo.data})}
             if (trfinfo.status === 'success') { 
               let newPayUpdate = {
                 'uniqueRef' : trfinfo.data.transfer.flutterChargeReference,
@@ -176,17 +211,20 @@ exports.subscribeWithAccount = function(req, res){
                 'bankCode': trfinfo.data.transfer.account.bankCode,
                 'accountNumber': trfinfo.data.transfer.account.accountNumber,
                 'accountName': trfinfo.data.transfer.account.accountName,
-                'payStatus': 'Pending'
+                'payStatus': 'Pending',
+                amountCharged:trfinfo.data.transfer.netDebitAmount,
+                medium:trfinfo.data.transfer.medium,
+                ipAddress:trfinfo.data.transfer.ip,
               }
         Payment.findByIdAndUpdate(paystat._id, newPayUpdate, function (err,  newupdatepay){
           if (err) { return res.status(500).json({status:"error", message:"Problem updating payment Info"});}
-          if (newupdatepay) { return res.status(200).json({status:"success", message:" Update Successful", data:newupdatepay});}
+          if (newupdatepay) //{ return res.status(200).json({status:"success", message:" Update Successful", data:newupdatepay});}
+          return res.status(200).json({status:"success", message:"transaction Successful, Pending Validation - Redirecting ...", });
 
         })
-              return res.status(200).json({status:"success", message:"transaction Successful, Pending Validation - Redirecting ...", });}
-
+      }
           })
-          }
+        }
         })
       }
      })
@@ -197,7 +235,7 @@ exports.subscribeWithAccount = function(req, res){
 
 /**
  * Buy a session (using internet banking)
- * @param {*} req 
+ * @param {{JSON:{amount, bank, userId, phoneNumber, quantity, requestmedium}} 
  * @param {*} res 
  */
 exports.subscribeWithInternetPay = function(req, res){
@@ -210,22 +248,23 @@ exports.subscribeWithInternetPay = function(req, res){
       if (user) {
         let firstname = user.firstName;
         let lastname = user.lastName;
-        let phonenumber = user.phoneNumber;
+       // let phonenumber = user.phoneNumber;
         let email = user.email;
 
         //MONEYWAVE PARAMS
         let body = {
           'firstname': firstname,
           'lastname': lastname,
-          'phonenumber': phonenumber,
+          'phonenumber': req.body.phoneNumber,
           'email': email,
           'recipient': "wallet",
           'charge_with': "ext_account",
-          'charge_auth': "INTERNETBANKING",
+          'charge_auth': "INTERNET_BANKING",
           'sender_bank': req.body.bank,
           'apiKey': config.moneywave.apiKey,
           'amount': req.body.amount,
           'fee': 0,
+          'recipient_id':1,
           'redirecturl': '', // endpoint to save transaction details
           'medium': req.body.requestmedium,
         }
@@ -237,9 +276,9 @@ exports.subscribeWithInternetPay = function(req, res){
           'email': user.email,
           'phoneNumber': user.phoneNumber,
           'quantity': req.body.quantity,
-          'payStatus': "Started",
+          'payStatus': "PENDING",
           'amount': req.body.amount,
-          'chargeMethod': "Internet Banking"
+          'chargeMethod': "Internet_Banking"
         })
 
         //SAVE TRANSACTION DETAILS
@@ -247,18 +286,18 @@ exports.subscribeWithInternetPay = function(req, res){
           if (err) { return res.status(500).json({ status: "error", message: "Problem saving pay Info" }); }
 
           if (paystat) {
-            User.findByIdAndUpdate(user._id, { $push: { payments: paystat._id } }, { new: true }, function (err, updatepay) {
-
+            user.save(function(err, updatepay){   
               if (err) { return res.status(500).json({ status: "error", message: "Problem updating pay Info" }); }
 
               if (updatepay) {
                 let payId = paystat._id;
-                body.redirecturl = '/session/updatestatus/' + payId
+                body.redirecturl = 'http://localhost:6990/session/updatestatus/'+payId
 
                 // SEND HTTP REQUEST TO MONEYWAVE
                 moneywave.PayWithInternetBanking.transfer(body, function (err, trfinfo) {
+                  
                   if (err) { return res.status(500).json({ status: "error", message: "Problem contacting Moneywave Server" }); }
-                  if (trfinfo.status === 'error') { return res.status(404).json({ status: "error", message: trfinfo.code }) }
+                  if (trfinfo.status === 'error') { return res.status(404).json({ status: "error", message: trfinfo.code, msg:trfinfo.message,data:trfinfo.data }) }
 
                   //IF TRANSACTION IS SUCCESSFULL
                   if (trfinfo.status === 'success') {
@@ -269,19 +308,22 @@ exports.subscribeWithInternetPay = function(req, res){
                       'bankCode': trfinfo.data.transfer.account.bankCode,
                       'accountNumber': trfinfo.data.transfer.account.accountNumber,
                       'accountName': trfinfo.data.transfer.account.accountName,
-                      'payStatus': 'PENDING VALIDATION'
+                      'payStatus': 'PENDING VALIDATION',
+                      amountCharged: trfinfo.data.transfer.netDebitAmount,
+                      medium: trfinfo.data.transfer.medium,
+                      ipAddress: trfinfo.data.transfer.ip,
                     }
 
                     Payment.findByIdAndUpdate(paystat._id, newPayUpdate, function (err, newupdatepay) {
                       if (err) { return res.status(500).json({ status: "error", message: "Problem updating payment Info" }); }
-                      if (newupdatepay) { return res.status(200).json({ status: "success", message: " Update Successful", data: newupdatepay }); }
-
+                      if (newupdatepay) //{ return res.status(200).json({ status: "success", message: " Update Successful", data: newupdatepay }); }
+                      return res.status(200).json({ 
+                        status: "success", 
+                        message: "transaction Successful, Pending Final Validation -  Redirecting ..." 
+                      });
                     })
 
-                    return res.status(200).json({ 
-                      status: "success", 
-                      message: "transaction Successful, Pending Final Validation -  Redirecting ..." 
-                    });
+                    
                   }
                 })
 
@@ -298,6 +340,8 @@ exports.subscribeWithInternetPay = function(req, res){
 
 /**
  * Redirect Url to verify Payment and Update Db
+ * @param {*} req
+ * @param {*} res
  */
 exports.updatePayStatus = function (req, res){
   Payment.findByIdAndUpdate(req.params.payId,
@@ -310,6 +354,8 @@ exports.updatePayStatus = function (req, res){
 
 /**
  * Redirect Url to confirm Payment OTP
+ *@param {JSON:{otp}}
+ *@param
  */
 
 exports.confirmPayment = function (req, res){
@@ -339,13 +385,15 @@ exports.confirmPayment = function (req, res){
 
 /**
  * Redirect Url for Card Payment
- * @param
- * 
+ *@param {JSON:{otp}}
+ *@param
  */
 exports.confirmCardPayment = function (req, res){
+  
   Payment.findById(req.params.payId, function(err, userPay){
+    
     if (err) { return res.status(500).json({status:"error", message:"DB_ERROR"});}
-    if (userPay.chargeMethod === 'VBVSECURECODE'){
+    if (userPay.chargeMethod === 'PIN'){
       let body = {
         'transactionRef' : userPay.uniqueRef,
         'otp': req.body.otp
@@ -363,7 +411,7 @@ exports.confirmCardPayment = function (req, res){
 
 
       })
-    }else  if(userPay.chargeMethod === 'PIN'){
+    }else  if(userPay.chargeMethod === 'VBVSECURECODE'){
       Payment.findByIdAndUpdate(req.params.payId,
         { $set :{payStatus : 'Completed',responseMsg : 'Transaction Successful' }},{new:true},  
         function(err, finalupdate){

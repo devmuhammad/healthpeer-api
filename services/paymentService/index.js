@@ -160,8 +160,10 @@ Moneywave.prototype = {
         //return body
         if(callback)
         {
+          // check for http error
+          if(error) { return callback(error, body); }
           //check for error from API
-          if(!body.status)
+          else if(!body.status)
           {
             error = body;
             body = null;

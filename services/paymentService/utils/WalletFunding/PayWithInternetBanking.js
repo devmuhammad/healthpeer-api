@@ -1,6 +1,6 @@
 'use strict'
 
-const root = 'v1/transfer';
+const root = '/v1/transfer';
 
 module.exports = {
     /**@params "amount","apiKey","charge_with","charge_auth", "firstname", "lastname", "phonenumber", "email",
