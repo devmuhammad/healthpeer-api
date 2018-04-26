@@ -1,4 +1,4 @@
-const BloodBank = require('../models').bloodBank
+const BloodBank = require('../models').BloodBank
       , User    = require('../models').user
       , jwt     = require('jsonwebtoken')
       , config  = require('../../config').app;

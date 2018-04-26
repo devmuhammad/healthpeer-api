@@ -2,9 +2,8 @@
 var mongoose = require ('mongoose');
 var Schema = mongoose.Schema
 
-
 var UserSchema = new Schema ({
-    email:{type: String, required: true, max: 100},
+    email:{type: String, required: true},
     userName:{type: String, required: true, max: 100},
     firstName:{type: String,  max: 100},
     lastName:{type: String,  max: 100},
@@ -19,24 +18,16 @@ var UserSchema = new Schema ({
       passHash:{type:String},
       token:{type:String}
     },
-    medicalInfo:{type: Schema.Types.ObjectId, ref:'medicalInfo'},
+    bloodBank: { type: [Schema.Types.ObjectId], ref: "BloodBank", index:true },
+    accountType: { type: String, required: true, enum: ["Patient", "Consultant"]},
   },
 {
-  timestamps: true
+  discriminatorKey: 'accountType',
+  collection: 'users', 
+  timestamps: true,
 });
 
-
-/**UserSchema.pre("save", function(next) {
-  console.log(this.accountType)
-  if(this.accountType === "patient"){
-    this.schema.add([{ allergy : 'string', accountType: {type:String} }])
-    UserSchema.add([{ allergy : 'string', accountType: String }])
-    this.accountType = "patient"
-  }else {
-    console.log("reachable")
-  }
-  next()
-})*/
+var User = mongoose.model('User', UserSchema);
 
 // Compile model from schema
-module.exports = mongoose.model('User', UserSchema);
+module.exports = User;
