@@ -4,6 +4,14 @@ const   config = require('../../config/index')
 const   moneywave = require('../../services/paymentService')(config.moneywave.apiKey,config.moneywave.secret)
 const   consultantTransaction =  require('../models').consultantTransaction
 
+
+/**
+ * Endpoint for Consultant Withdrawal
+ * @param {JSON:{accountnumber,bankcode,amount} } req
+ * @param {} res
+ */
+
+
 exports.makeWithdrawal = function (req, res){
     User.findById(req.body.userId, function(err, user){
         if (err) { return res.status(500).json({status:"error", message:"DB_ERROR"});}
@@ -15,18 +23,20 @@ exports.makeWithdrawal = function (req, res){
             'lock': config.moneywave.lock,
             'amount': req.body.amount, 
             'bankcode': req.body.bankcode, 
-            'accountNumber': req.body.accountNumber, 
+            'accountNumber': req.body.accountnumber, 
             'currency': "NGN", 
             'senderName': "HealthPeer NG", 
             'ref': hpRef,
         }
+        
         if (req.body.amount >= user.balance){
             return res.status(404).json({status:"error", message:"Insufficient Balance"})
         } else if (req.body.amount < user.balance){
 
             moneywave.WalletToAccountTransfer.transfer(body, function(err, trfinfo){
                 if (err) { return res.status(500).json({status:"error", message:"Problem contacting Moneywave Server"});}
-            
+            console.log(trfinfo)
+            if (trfinfo.status === 'error'){return res.status(400).json({status:"error", code:trfinfo.code, message:trfinfo.message, data:trfinfo.data});}
                 if (trfinfo.data.data.responsecode === '00'){
                 return res.status(200).json({status:"success", message:"transaction Successful", data:trfinfo.data});
             let trans = {
@@ -45,9 +55,19 @@ exports.makeWithdrawal = function (req, res){
             let newTransaction = new consultantTransaction (trans);
             newTransaction.save( function (err, transinfo){
                 if (err) { return res.status(500).json({status:"error", message:"There was a problem adding the info to the DB"});}
-                if (transinfo){ return res.status(200).json({status:"success", message:"transaction saved successfully", data:transinfo});}
-                
+                if (transinfo){ 
+                    user.payments.push(paystat._id)
+      
+                user.save(function(err, updatepay){          
+                 if (err) { return res.status(500).json({status:"error", message:"Problem updating pay Info"});}
+                    
+                 if(updatepay) {
+
+                    return res.status(200).json({status:"success", message:"transaction saved successfully", data:updatepay});}
+                })
+                }
             });
+            
         }
         });
         }
@@ -73,7 +93,7 @@ exports.listBank = function (req, res){
 
 /**
  * Endpoint for validating account Number
- * @param {accountnumber,bankcode} req
+ * @param {JSON:{accountnumber,bankcode} } req
  * @param {} res
  */
 exports.validateAccountNumber = function(req, res){
@@ -91,7 +111,7 @@ moneywave.ValidateAccountNumber.validate(body, function(err, acctinfo){
 };
 /**
  * Endpoint for for getting Total charge
- * @param {amount,fee} req
+ * @param {JSON:{amount,fee} } req
  * @param {} res
  */
 exports.getTotalCardCharge = function(req, res){
@@ -133,7 +153,7 @@ exports.RetryFailedTransaction = function(req, res){
 
 /**
  * Endpoint for creating Sub wallet
- * @param {name,password} req
+ * @param {JSON:{name,password} } req
  * @param {} res
  */
 exports.createSubWallet = function(req, res){

@@ -18,6 +18,6 @@ module.exports = {
   payment: userPayment,
   session: session,
   Thread: Thread,
-  ThreadMessage: ThreadMessage
+  ThreadMessage: ThreadMessage,
   bloodBank: BloodBank
 }

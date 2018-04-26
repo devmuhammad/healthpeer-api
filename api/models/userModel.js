@@ -10,8 +10,10 @@ var UserSchema = new Schema ({
     lastName:{type: String,  max: 100},
     password:{type: String, required: true, max: 100},
     dofBirth:{type: Date},
+    balance:{type:Number},
     state:{type: String},
     gender:{type:String},
+    payments:{type: [Schema.Types.ObjectId], ref:'paymentModel'},
     phoneNumber:{type:String},
     passwordResetKey:{
       passHash:{type:String},

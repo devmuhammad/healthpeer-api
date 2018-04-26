@@ -1,7 +1,7 @@
 const Thread          = require('../api/models').Thread
       , ThreadMessage = require('../api/models').ThreadMessage
       , User          = require('../api/models').user
-      , redisCache    = require('redis').createClient()
+      //, redisCache    = require('redis').createClient()
       , jwt           = require('jsonwebtoken')
       , CONFIG        = require("../config").app
 
