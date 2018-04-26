@@ -15,11 +15,11 @@
 
 //Login Method
 exports.login = function (req, res){
-    let loginUser = new User (req.body);
+    let loginUser = req.body
     
-    User.findOne({ $or :[{ email: loginUser.email},{ userName: loginUser.userName }]}, function(err, user){
+    User.findOne({ $or :[{ email: loginUser.user},{ userName: loginUser.user }]}, function(err, user){
         if (err) return res.status(500).json({status:"error", message:"DB_ERROR"});
-        if (!user) return res.status(401).json({status:"error", message:"Invalid User"});
+        if (!user) return res.status(401).json({status:"error", message:"Invalid User or Password"});
         
         let passwordIsValid = bcrypt.compareSync( loginUser.password, user.password)
              if (!passwordIsValid) return res.status(401).json({ auth: false, token: null})
@@ -62,10 +62,9 @@ exports.signedHeader = (function (req, res){
   
       if (!newUser) return res.status(400).json({status:"error", message:"Empty or Incomplete Parameters for New User "});
       
-      User.findOne ({ $or :[{ email: loginUser.email},{ userName: loginUser.userName }]}, function(err, user){
-         if (err) return res.status(500).json({status:"error", message:"DB ERROR"});
-         if (user.email) return res.status(401).json({status:"error", message:"Email already exist"}); 
-         if (user.userName) return res.status(401).json({status:"error", message:"UserName already exist"});
+      User.findOne ({ $or :[{ email: newUser.email},{ userName: newUser.userName }]}, function(err, user){
+         if (err) return res.status(500).json({status:"error", message:"DB ERROR"}); 
+         if (!user){
          newUser.password = hashedPassword
         
          newUser.save( function (err, user){
@@ -80,7 +79,9 @@ exports.signedHeader = (function (req, res){
         })
         res.status(200).json({status:"success", message:"Users added successfully",data:user});
       })
-      
+    } 
+    else if (user.email === newUser.email) return res.status(401).json({status:"error", message:"Email already exist"}); 
+    else if (user.userName === newUser.userName) return res.status(401).json({status:"error", message:"UserName already exist"});
    });
   } else if (req.body.accountType === 'consultant'){
       User.schema.add({'accountType':{type:String}});
@@ -94,11 +95,10 @@ exports.signedHeader = (function (req, res){
       let hashedPassword = bcrypt.hashSync(newUser.password, 8);
       if (!newUser) return res.status(400).json({status:"error", message:"Empty or Incomplete Parameters for New User "});
       
-      User.findOne ({ $or :[{ email: loginUser.email},{ userName: loginUser.userName }]}, function(err, user){
+      User.findOne ({ $or :[{ email: newUser.email},{ userName: newUser.userName }]}, function(err, user){
         if (err) return res.status(500).json({status:"error", message:"DB ERROR"});
-        if (user.email) return res.status(401).json({status:"error", message:"Email already exist"}); 
-        if (user.userName) return res.status(401).json({status:"error", message:"UserName already exist"});
-         
+        
+        if (!user){
          newUser.password = hashedPassword;
          newUser.balance = 0;
          newUser.save( function (err, user){
@@ -110,7 +110,9 @@ exports.signedHeader = (function (req, res){
         })
         res.status(200).json({status:"success", message:"Users added successfully",data:user});
       })
-      
+    }
+    else if (user.email === newUser.email) return res.status(401).json({status:"error", message:"Email already exist"}); 
+    else if (user.userName === newUser.userName) return res.status(401).json({status:"error", message:"UserName already exist"});
    });
   } else return res.status(500).json({status:"error", message:"DB ERROR"});
   };
@@ -179,7 +181,7 @@ exports.signedPassReset = function (req, res){
 };
 //Password Reset Final Procedure
 exports.resetPasswordFinal = function (req, res){
-        let userPassword = new User(req.body)
+        let userPassword = new User (req.body)
 
         let hashedPassword = bcrypt.hashSync(userPassword.password, 8);
    User.findOne({ "passwordResetKey.passHash" : req.params.resetkey},function(err, user){

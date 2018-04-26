@@ -64,6 +64,7 @@ app.use("/user", Routes.user);
 app.use("/auth", Routes.auth);
 app.use("/pay", Routes.payment);
 app.use("/session", Routes.session);
+app.use("/bloodbank", Routes.BloodBank);
 
 
 

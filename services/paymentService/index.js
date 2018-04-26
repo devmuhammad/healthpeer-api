@@ -155,7 +155,7 @@ Moneywave.prototype = {
       //append query string to options if available
       if(qs){ options.qs = qs; }
 
-      request(options, function(error, response, body){
+      request(options, function(error, response, body) {
 
         //return body
         if(callback)
