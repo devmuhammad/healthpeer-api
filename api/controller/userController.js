@@ -15,7 +15,7 @@
     };
   
  exports.userbyid = (function (req, res){
-    User.findById(req.params.userId, function (err, user){
+    User.findById(req.params.userId).populate("medicalInfo","payments").exec (function (err, user){
 
       if (err) return res.status(500).json({status:"error", message:"DB ERROR"});
       if (!user) return res.status(401).json({status:"error", message:"No User found"});
@@ -24,8 +24,27 @@
       });
     });
 
+
  exports.updateuserProfile = function (req, res){
     let updtUser = req.body
+    if (updtUser.userData) {
+      User.findById(updtUser.userData.userId, function(err, user){
+        if (err) return res.status(500).json({status:"error", message:"There was a problem Updating user "});
+        if (!user) return res.status(404).json({status:"error", message:"user not found"});
+
+        if (user){
+          let newImage = new User()
+          newImage.userImg.data = updtUser.userData.data
+          newImage.save( function(err,nwImage){
+            if (err) return res.status(500).json({status:"error", message:"There was a problem Updating user Image "});
+
+            if (nwImage){
+              res.status(200).json({status:"success", message:"user updated successfully",data:nwImage});
+            }
+          })
+        }
+    })
+  }else 
     User.findById(updtUser.id, function(err, user){
       if (err) return res.status(500).json({status:"error", message:"There was a problem Updating user "});
       if (!user) return res.status(404).json({status:"error", message:"user not found"});
@@ -67,7 +86,7 @@ exports.updateMedInfo = (function (req, res){
       });
     }
    else if (!usermed.medicalInfo){
-  newMedInfo.save( function(err,medInfo){
+  newMedInfo.save( function(err,medInfo){ 
     if (err) return res.status(500).json({status:"error", message:"There was a problem saving the info "});
     User.findByIdAndUpdate(loggedInUser,{ $set :{medicalInfo : medInfo._id}},{new:true}, function(err,user){
       if (err) return res.status(500).json({status:"error", message:"There was a problem updating the info"});

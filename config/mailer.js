@@ -7,13 +7,13 @@ exports.transporter = nodemailer.createTransport({
     secure: false,
     requireTLS: true,
     auth: {
-           user: 'shuaibola12@gmail.com',
-           pass: '2nov2011745'
+           user: 'healthpeerng@gmail.com',
+           pass: 'HealthPeer!'
        }
    });
 
    exports.mailOptions = {
-    from: 'shuaibola12@gmail.com', // sender address
+    from: 'healthpeerng@gmail.com', // sender address
     to: '', // list of receivers
     subject: 'HealthPeer Password Recovery ', // Subject line
     html: '<p></p>'// plain text body

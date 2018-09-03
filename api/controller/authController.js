@@ -16,7 +16,7 @@
    
 
 //Login Method
-exports.login = function (req, res){
+exports.login = function (req, res){ 
     let loginUser = req.body
     
     User.findOne({ $or :[{ email: loginUser.user},{ userName: loginUser.user }]}, function(err, user){
@@ -81,7 +81,7 @@ exports.signedHeader = (function (req, res){
         CREATE_USER(user._id, function(res, err){
             
         })
-        res.status(200).json({status:"success", message:"Users added successfully",data:user});
+        res.status(200).json({status:"success", message:"User added successfully",data:user});
       })
     } 
     else if (user.email === newUser.email) return res.status(401).json({status:"error", message:"Email already exist"}); 
