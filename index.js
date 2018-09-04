@@ -61,7 +61,7 @@ app.use(morgan('combined', {stream: httpLogStream}));
 //Apply middleware
 app.use(['/user', '/medicalinfo'], middleware)
 // Routes
-app.get('/cool', (req, res) => res.send(cool()))
+// app.get('/cool', (req, res) => res.send(cool()))
 app.use("/user", Routes.user);
 app.use("/auth", Routes.auth);
 app.use("/pay", Routes.payment);
