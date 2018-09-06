@@ -97,7 +97,7 @@ exports.signedHeader = (function (req, res){
         emailer.mailOptions.subject = mailsub;
         //send reset mail
         emailer.transporter.sendMail(emailer.mailOptions, function (err, info) {
-            if(err) { return res.status(500).json({status:"error", message:"Email could not be sent"}) }
+            if(err) { return res.status(500).json({status:"error", message:"Email could not be sent "+ err +"."}) }
             // if (info){return res.sttaus(200).json({status:"success", message:"Email Successfully sent"})}
             else {
                 res.status(200).json({status:"success", message:"Mail Sent & User added successfully",data:user});
