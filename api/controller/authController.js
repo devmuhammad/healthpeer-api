@@ -66,9 +66,11 @@ exports.signedHeader = (function (req, res){
   
       if (!newUser) return res.status(400).json({status:"error", message:"Empty or Incomplete Parameters for New User "});
       
-      User.findOne ({ $or :[{ email: newUser.email},{ userName: newUser.userName }]}, function(err, user){
+      User.findOne ({ $or :[{ email: newUser.email},{ userName: newUser.userName },{ email: newUser.phoneNumber }]}, function(err, user){
          if (err) return res.status(500).json({status:"error", message:"DB ERROR "}); 
-         conole.log(err)
+         if (user.email === newUser.email) return res.status(401).json({status:"error", message:"Email already exist"}); 
+         if (user.userName === newUser.userName) return res.status(401).json({status:"error", message:"Username already exist"});
+         if (user.phoneNumber === newUser.phoneNumber) return res.status(401).json({status:"error", message:"Phone Number already exist"});
          if (!user){
          newUser.password = hashedPassword
         
@@ -100,8 +102,6 @@ exports.signedHeader = (function (req, res){
         })
       })
     } 
-    else if (user.email === newUser.email) return res.status(401).json({status:"error", message:"Email already exist"}); 
-    else if (user.userName === newUser.userName) return res.status(401).json({status:"error", message:"UserName already exist"});
    });
   } else if (req.body.accountType === 'Consultant'){
       //User.schema.add({'accountType':{type:String}});
@@ -117,8 +117,10 @@ exports.signedHeader = (function (req, res){
       
       User.findOne ({ $or :[{ email: newUser.email},{ userName: newUser.userName }]}, function(err, user){
         if (err) return res.status(500).json({status:"error", message:"DB ERROR"});
-        
-        if (!user){
+        else if (user.email === newUser.email) return res.status(401).json({status:"error", message:"Email already exist"}); 
+        else if (user.userName === newUser.userName) return res.status(401).json({status:"error", message:"Username already exist"});
+        else if (user.phoneNumber === newUser.phoneNumber) return res.status(401).json({status:"error", message:"Phone Number already exist"});
+        else if (!user){
          newUser.password = hashedPassword;
          //newUser.balance = 0;
          newUser.save( function (err, user){
@@ -149,8 +151,6 @@ exports.signedHeader = (function (req, res){
         
       })
     }
-    else if (user.email === newUser.email) return res.status(401).json({status:"error", message:"Email already exist"}); 
-    else if (user.userName === newUser.userName) return res.status(401).json({status:"error", message:"UserName already exist"});
    });
   } else return res.status(500).json({status:"error", message:"DB ERROR"});
   };
