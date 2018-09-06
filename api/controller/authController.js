@@ -66,12 +66,15 @@ exports.signedHeader = (function (req, res){
   
       if (!newUser) return res.status(400).json({status:"error", message:"Empty or Incomplete Parameters for New User "});
       
-      User.findOne ({ $or :[{ email: newUser.email},{ userName: newUser.userName },{ email: newUser.phoneNumber }]}, function(err, user){
-         if (err) return res.status(500).json({status:"error", message:"DB ERROR "}); 
-         else if (user.email === newUser.email) return res.status(401).json({status:"error", message:"Email already exist"}); 
-         else if (user.userName === newUser.userName) return res.status(401).json({status:"error", message:"Username already exist"});
-         else if (user.phoneNumber === newUser.phoneNumber) return res.status(401).json({status:"error", message:"Phone Number already exist"});
-         else if (!user){
+      User.findOne ({ $or :[{ email: newUser.email},{ userName: newUser.userName },{ phoneNumber: newUser.phoneNumber }]}, function(err, user){
+         if (err) { return res.status(500).json({status:"error", message:"DB ERROR "}); }
+
+         else if (user){
+          if (user.email === newUser.email){ return res.status(401).json({status:"error", message:"Email already exist"}); }
+         else if (user.userName === newUser.userName) {return res.status(401).json({status:"error", message:"Username already exist"}); }
+         else if (user.phoneNumber === newUser.phoneNumber) {return res.status(401).json({status:"error", message:"Phone Number already exist"});}
+        
+        }else if (!user){
          newUser.password = hashedPassword
         
          newUser.save( function (err, user){
@@ -115,12 +118,15 @@ exports.signedHeader = (function (req, res){
       let hashedPassword = bcrypt.hashSync(newUser.password, 8);
       if (!newUser) return res.status(400).json({status:"error", message:"Empty or Incomplete Parameters for New User "});
       
-      User.findOne ({ $or :[{ email: newUser.email},{ userName: newUser.userName }]}, function(err, user){
-        if (err) return res.status(500).json({status:"error", message:"DB ERROR"});
-        else if (user.email === newUser.email) return res.status(401).json({status:"error", message:"Email already exist"}); 
-        else if (user.userName === newUser.userName) return res.status(401).json({status:"error", message:"Username already exist"});
-        else if (user.phoneNumber === newUser.phoneNumber) return res.status(401).json({status:"error", message:"Phone Number already exist"});
-        else if (!user){
+      User.findOne ({ $or :[{ email: newUser.email},{ userName: newUser.userName },{ phoneNumber: newUser.phoneNumber }]}, function(err, user){
+        if (err){ return res.status(500).json({status:"error", message:"DB ERROR"});}
+        
+        else if (user){
+         if (user.email === newUser.email){ return res.status(401).json({status:"error", message:"Email already exist"}); 
+        }else if (user.userName === newUser.userName) {return res.status(401).json({status:"error", message:"Username already exist"});
+        }else if (user.phoneNumber === newUser.phoneNumber) return res.status(401).json({status:"error", message:"Phone Number already exist"});
+        
+    } else if (!user){
          newUser.password = hashedPassword;
          //newUser.balance = 0;
          newUser.save( function (err, user){
