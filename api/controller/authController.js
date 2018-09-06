@@ -85,9 +85,9 @@ exports.signedHeader = (function (req, res){
             expiresIn: 86400 // expires in 24hours
         })
         //create chatroom user
-        CREATE_USER(user._id, function(res, err){
-            
-        })
+        // CREATE_USER(user._id, function(res, err){
+        //     if (err) return res.status(500).json({status:"error", message:"Chat acct could not be created"})
+        // })
         //send registration email
         let mailtext = "Hello "+ user.userName +", <br> Thank You for joining us, we are glad to have you onboard <br> You can now consult with our verified Consultants and get realtime medical advices. <br> Welcome Once again"
         let mailsub = "✔ Welcome To Healthpeer NG!"
