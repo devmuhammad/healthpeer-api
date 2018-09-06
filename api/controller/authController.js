@@ -67,7 +67,7 @@ exports.signedHeader = (function (req, res){
       if (!newUser) return res.status(400).json({status:"error", message:"Empty or Incomplete Parameters for New User "});
       
       User.findOne ({ $or :[{ email: newUser.email},{ userName: newUser.userName }]}, function(err, user){
-         if (err) return res.status(500).json({status:"error", message:"DB ERROR"+err}); 
+         if (err) return res.status(500).json({status:"error", message:"DB ERROR "+ err +"."}); 
          if (!user){
          newUser.password = hashedPassword
         
