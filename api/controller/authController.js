@@ -68,10 +68,10 @@ exports.signedHeader = (function (req, res){
       
       User.findOne ({ $or :[{ email: newUser.email},{ userName: newUser.userName },{ email: newUser.phoneNumber }]}, function(err, user){
          if (err) return res.status(500).json({status:"error", message:"DB ERROR "}); 
-         if (user.email === newUser.email) return res.status(401).json({status:"error", message:"Email already exist"}); 
-         if (user.userName === newUser.userName) return res.status(401).json({status:"error", message:"Username already exist"});
-         if (user.phoneNumber === newUser.phoneNumber) return res.status(401).json({status:"error", message:"Phone Number already exist"});
-         if (!user){
+         else if (user.email === newUser.email) return res.status(401).json({status:"error", message:"Email already exist"}); 
+         else if (user.userName === newUser.userName) return res.status(401).json({status:"error", message:"Username already exist"});
+         else if (user.phoneNumber === newUser.phoneNumber) return res.status(401).json({status:"error", message:"Phone Number already exist"});
+         else if (!user){
          newUser.password = hashedPassword
         
          newUser.save( function (err, user){
