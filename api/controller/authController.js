@@ -67,7 +67,7 @@ exports.signedHeader = (function (req, res){
       if (!newUser) return res.status(400).json({status:"error", message:"Empty or Incomplete Parameters for New User "});
       
       User.findOne ({ $or :[{ email: newUser.email},{ userName: newUser.userName }]}, function(err, user){
-         if (err) return res.status(500).json({status:"error", message:"DB ERROR"}); 
+         if (err) return res.status(500).json({status:"error", message:"DB ERROR"+err}); 
          if (!user){
          newUser.password = hashedPassword
         
@@ -77,6 +77,18 @@ exports.signedHeader = (function (req, res){
            //create a token
            let token = jwt.sign({ id : user._id }, config.app.secret, {
             expiresIn: 86400 // expires in 24hours
+        })
+        //send registration email
+        let mailtext = "Hello "+ user.userName +", Welcome To Healthpeer NG! <br> Thank You for joiningn us, we are glad to have you onboard <br> You can now consult with our verified Consultants and get realtime medical advices. <br> Welcome Once again"
+
+        //mail options
+        emailer.mailOptions.to = user.email;
+        emailer.mailOptions.html =  mailtext 
+
+        //send reset mail
+        emailer.transporter.sendMail(emailer.mailOptions, function (err, info) {
+            if(err) { return res.status(500).json({status:"error", message:"Email could not be sent"}) }
+            if (info){return res.sttaus(200).json({status:"success", message:"Email Successfully sent"})}
         })
         CREATE_USER(user._id, function(res, err){
             
@@ -111,6 +123,19 @@ exports.signedHeader = (function (req, res){
            //create a token
            let token = jwt.sign({ id : user._id }, config.app.secret, {
             expiresIn: 86400 // expires in 24hours
+            
+        })
+        //send registration email
+        let mailtext = "Hello Dr."+ user.userName +", Welcome To Healthpeer NG! <br> Thank You for Joining us, we are glad to have you onboard <br> You can now administer medical advices to our patient and get paid for your services. <br> Thank you and Welcome Once again"
+
+        //mail options
+        emailer.mailOptions.to = user.email;
+        emailer.mailOptions.html =  mailtext 
+
+        //send reset mail
+        emailer.transporter.sendMail(emailer.mailOptions, function (err, info) {
+            if(err) { return res.status(500).json({status:"error", message:"Email could not be sent"}) }
+            if (info){return res.sttaus(200).json({status:"success", message:"Email Successfully sent"})}
         })
         res.status(200).json({status:"success", message:"Users added successfully",data:user});
       })
