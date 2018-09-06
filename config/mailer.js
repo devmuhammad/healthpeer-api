@@ -15,7 +15,7 @@ exports.transporter = nodemailer.createTransport({
    exports.mailOptions = {
     from: 'healthpeerng@gmail.com', // sender address
     to: '', // list of receivers
-    subject: 'HealthPeer Password Recovery ', // Subject line
+    subject: '', // Subject line
     html: '<p></p>'// plain text body
   };
  

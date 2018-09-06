@@ -67,7 +67,8 @@ exports.signedHeader = (function (req, res){
       if (!newUser) return res.status(400).json({status:"error", message:"Empty or Incomplete Parameters for New User "});
       
       User.findOne ({ $or :[{ email: newUser.email},{ userName: newUser.userName }]}, function(err, user){
-         if (err) return res.status(500).json({status:"error", message:"DB ERROR "+ err +"."}); 
+         if (err) return res.status(500).json({status:"error", message:"DB ERROR "}); 
+         conole.log(err)
          if (!user){
          newUser.password = hashedPassword
         
@@ -78,22 +79,25 @@ exports.signedHeader = (function (req, res){
            let token = jwt.sign({ id : user._id }, config.app.secret, {
             expiresIn: 86400 // expires in 24hours
         })
-        //send registration email
-        let mailtext = "Hello "+ user.userName +", Welcome To Healthpeer NG! <br> Thank You for joiningn us, we are glad to have you onboard <br> You can now consult with our verified Consultants and get realtime medical advices. <br> Welcome Once again"
-
-        //mail options
-        emailer.mailOptions.to = user.email;
-        emailer.mailOptions.html =  mailtext 
-
-        //send reset mail
-        emailer.transporter.sendMail(emailer.mailOptions, function (err, info) {
-            if(err) { return res.status(500).json({status:"error", message:"Email could not be sent"}) }
-            if (info){return res.sttaus(200).json({status:"success", message:"Email Successfully sent"})}
-        })
+        //create chatroom user
         CREATE_USER(user._id, function(res, err){
             
         })
-        res.status(200).json({status:"success", message:"User added successfully",data:user});
+        //send registration email
+        let mailtext = "Hello "+ user.userName +", <br> Thank You for joining us, we are glad to have you onboard <br> You can now consult with our verified Consultants and get realtime medical advices. <br> Welcome Once again"
+        let mailsub = "✔ Welcome To Healthpeer NG!"
+        //mail options
+        emailer.mailOptions.to = user.email;
+        emailer.mailOptions.html =  mailtext ;
+        emailer.mailOptions.subject = mailsub;
+        //send reset mail
+        emailer.transporter.sendMail(emailer.mailOptions, function (err, info) {
+            if(err) { return res.status(500).json({status:"error", message:"Email could not be sent"}) }
+            // if (info){return res.sttaus(200).json({status:"success", message:"Email Successfully sent"})}
+            else {
+                res.status(200).json({status:"success", message:"Mail Sent & User added successfully",data:user});
+            }
+        })
       })
     } 
     else if (user.email === newUser.email) return res.status(401).json({status:"error", message:"Email already exist"}); 
@@ -127,17 +131,22 @@ exports.signedHeader = (function (req, res){
         })
         //send registration email
         let mailtext = "Hello Dr."+ user.userName +", Welcome To Healthpeer NG! <br> Thank You for Joining us, we are glad to have you onboard <br> You can now administer medical advices to our patient and get paid for your services. <br> Thank you and Welcome Once again"
+        let mailsub = "✔ Welcome To Healthpeer NG!"
 
         //mail options
         emailer.mailOptions.to = user.email;
         emailer.mailOptions.html =  mailtext 
+        emailer.mailOptions.subject = mailsub;
 
         //send reset mail
         emailer.transporter.sendMail(emailer.mailOptions, function (err, info) {
             if(err) { return res.status(500).json({status:"error", message:"Email could not be sent"}) }
-            if (info){return res.sttaus(200).json({status:"success", message:"Email Successfully sent"})}
+            // if (info){return res.sttaus(200).json({status:"success", message:"Email Successfully sent"})}
+            else {
+                res.status(200).json({status:"success", message:"Mail Sent & User added successfully",data:user});
+            }
         })
-        res.status(200).json({status:"success", message:"Users added successfully",data:user});
+        
       })
     }
     else if (user.email === newUser.email) return res.status(401).json({status:"error", message:"Email already exist"}); 
@@ -160,12 +169,14 @@ exports.resetPassword = function (req, res){
             let passwordResetHash = uuidv4();
             let passLink = 'http://localhost:3000/confirmresetpassword/'+passwordResetHash
             let mailtext = "We received your request for a password reset on your HealthPeer Account. <br> Click on the link  below to setup a new password <br>"+ passLink
+            let mailsub = "✔ HealthPeer Password Recovery"
             let token = jwt.sign({ iat : new Date().getTime() / 1000 }, passwordResetHash, {
                 expiresIn: 3600 // expires in 1H
             })
             //mail options
             emailer.mailOptions.to = user.email;
             emailer.mailOptions.html =  mailtext 
+            emailer.mailOptions.subject = mailsub;
 
             //send reset mail
             emailer.transporter.sendMail(emailer.mailOptions, function (err, info) {
