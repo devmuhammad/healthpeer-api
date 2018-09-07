@@ -29,7 +29,7 @@ exports.login = function (req, res){
         let token = jwt.sign({ id: user._id}, config.app.secret, {
             expiresIn: 3600 // expires in 1hour
         })
-        res.status(200).json({status:"success", auth: true, token: token });
+        res.status(200).json({status:"success", auth: true, token: token, data:user });
     });
     
 };
@@ -85,12 +85,12 @@ exports.signedHeader = (function (req, res){
             expiresIn: 86400 // expires in 24hours
         })
         //create chatroom user
-        // CREATE_USER(user._id, function(res, err){
-        //     if (err) return res.status(500).json({status:"error", message:"Chat acct could not be created"})
-        // })
+        CREATE_USER(user._id, function(res, err){
+            if (err) return res.status(500).json({status:"error", message:"Chat acct could not be created"})
+        })
         //send registration email
-        let mailtext = "Hello "+ user.userName +", <br> Thank You for joining us, we are glad to have you onboard <br> You can now consult with our verified Consultants and get realtime medical advices. <br> Welcome Once again"
-        let mailsub = "✔ Welcome To Healthpeer NG!"
+        let mailtext = "<p style='font-size:24'><strong>Hello "+ user.userName +", <br> Thank You for joining us, we are glad to have you onboard <br> Login now to consult with our verified Consultants and get realtime medical advices.<br><img src='https://www.healthpeer.ng/static/img/hp-logo2.png' height='54' width='200'></img></strong></p>"
+        let mailsub = "✔ Welcome To Healthpeer NG"
         //mail options
         emailer.mailOptions.to = user.email;
         emailer.mailOptions.html =  mailtext ;
@@ -137,9 +137,13 @@ exports.signedHeader = (function (req, res){
             expiresIn: 86400 // expires in 24hours
             
         })
+        //create chatroom user
+        CREATE_USER(user._id, function(res, err){
+            if (err) return res.status(500).json({status:"error", message:"Chat acct could not be created"})
+        })
         //send registration email
-        let mailtext = "Hello Dr."+ user.userName +", Welcome To Healthpeer NG! <br> Thank You for Joining us, we are glad to have you onboard <br> You can now administer medical advices to our patient and get paid for your services. <br> Thank you and Welcome Once again"
-        let mailsub = "✔ Welcome To Healthpeer NG!"
+        let mailtext = "<p style='font-size:24'><strong>Hello Dr."+ user.userName +", <br> Thank You for Joining us, we are glad to have you onboard <br> You can now administer medical advices to our patient and get paid for your services. <br> Thank you and Welcome Once again <br><img src='https://www.healthpeer.ng/static/img/hp-logo2.png' height='54' width='200'></img></strong></p>"
+        let mailsub = "✔ Welcome To Healthpeer NG"
 
         //mail options
         emailer.mailOptions.to = user.email;
@@ -174,7 +178,7 @@ exports.resetPassword = function (req, res){
         
             let passwordResetHash = uuidv4();
             let passLink = 'http://localhost:3000/confirmresetpassword/'+passwordResetHash
-            let mailtext = "We received your request for a password reset on your HealthPeer Account. <br> Click on the link  below to setup a new password <br>"+ passLink
+            let mailtext = "We received your request for a password reset on your HealthPeer Account. <br> Click on the link  below to setup a new password <br>"+ passLink 
             let mailsub = "✔ HealthPeer Password Recovery"
             let token = jwt.sign({ iat : new Date().getTime() / 1000 }, passwordResetHash, {
                 expiresIn: 3600 // expires in 1H

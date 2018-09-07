@@ -1,19 +1,21 @@
 
 var nodemailer = require('nodemailer');
+var smtpTransport = require('nodemailer-smtp-transport');
 
-exports.transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 465,
-    secure: true,
-    requireTLS: true,
+exports.transporter = nodemailer.createTransport(smtpTransport({
+    service: 'gmail',
+    // host: 'smtp.gmail.com',
+    // port: 587,
+    // secure: false,
+    // requireTLS: true,
     auth: {
            user: 'healthpeerng@gmail.com',
            pass: 'HealthPeer!'
        }
-   });
+   }));
 
    exports.mailOptions = {
-    from: 'healthpeerng@gmail.com', // sender address
+    from: '"Healthpeer NG" <healthpeerng@gmail.com>', // sender address
     to: '', // list of receivers
     subject: '', // Subject line
     html: '<p></p>'// plain text body

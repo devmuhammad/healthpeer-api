@@ -25,6 +25,7 @@
     "mongoose": "^5.0.14",
     "morgan": "^1.9.0",
     "nodemailer": "^4.6.4",
+    "nodemailer-smtp-transport": "^2.7.4",
     "pusher-chatkit-server": "^0.11.1",
     "redis": "^2.8.0",
     "socket.io": "^2.1.0",
