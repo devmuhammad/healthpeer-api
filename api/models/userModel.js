@@ -15,7 +15,6 @@ var UserSchema = new Schema ({
     state:{type: String},
     gender:{type:String},
     payments:{type: [Schema.Types.ObjectId], ref:'paymentModel'},
-    medicalInfo:{type: [Schema.Types.ObjectId], ref:'medicalInfoModel'},
     phoneNumber:{type:String},
     passwordResetKey:{
       passHash:{type:String},
