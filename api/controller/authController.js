@@ -34,7 +34,7 @@ exports.login = function (req, res){
     
 };
     //Logout Method
-exports.logout = function (){
+exports.logout = function (req, res){
     res.status(200).json({status:"success", auth: false, token: null });
 };
 
