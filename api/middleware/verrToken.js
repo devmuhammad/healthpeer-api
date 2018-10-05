@@ -19,6 +19,6 @@ function verifyToken (req, res, next) {
 
   let userId = myUser
 
-  next()
+  next(userId)
 }
 module.exports = verifyToken;

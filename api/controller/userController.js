@@ -7,7 +7,7 @@
     
  exports.userslist = function (req, res){
    
-    User.find().populate("medicalInfo","payments").exec( function(err, user) {
+    User.find().populate("medicalinfos","payments").exec( function(err, user) {
        if (err) return res.status(500).json({status:"error", message:"DB ERROR"});
        if (!user) return res.status(401).json({status:"error", message:"No User found"}); 
         res.status(200).json({status:"success", message:"Users",data:user});
@@ -15,7 +15,7 @@
     };
   
  exports.userbyid = (function (req, res){
-    User.findById(req.params.userId).populate("medicalInfo","payments").exec (function (err, user){
+    User.findById(req.params.userId).populate("medicalinfos","payments").exec (function (err, user){
 
       if (err) return res.status(500).json({status:"error", message:"DB ERROR"});
       if (!user) return res.status(401).json({status:"error", message:"No User found"});

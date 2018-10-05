@@ -1,6 +1,6 @@
 const router = require("express").Router();
 const user_controller = require('../controller/userController');
-var verifyToken = require('../middleware/verifyToken');
+var verrToken = require('../middleware/verrToken');
 
 // User Routes
     router.get('/getusers', user_controller.userslist); // endpoint for retrieving all users GET
@@ -10,6 +10,6 @@ var verifyToken = require('../middleware/verifyToken');
     router.delete('/delete/:userId', user_controller.deleteUser); //endpoint to delete user by Id DELETE
 
 //Medical Information Route
-    router.post('/updatemedInfo', verifyToken, user_controller.updateMedInfo)
+    router.post('/updatemedInfo', verrToken, user_controller.updateMedInfo)
 
 module.exports = router;
