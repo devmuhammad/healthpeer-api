@@ -14,6 +14,14 @@ var UserSchema = new Schema ({
     balance:{type:Number},
     state:{type: String},
     gender:{type:String},
+    medicalInfo:{
+        bp:{type:String, default:'0/0'},
+        weight:{type:String, default:'--'},
+        height:{type:String, default:'--'},
+        bloodGroup:{type:String,default:'O+'},
+        genotype:{type:String,default:'AA'},
+        consultationHistory:[{ type: Schema.Types.ObjectId, ref : 'consultHistory'}]
+    },
     payments:{type: [Schema.Types.ObjectId], ref:'paymentModel'},
     phoneNumber:{type:String},
     passwordResetKey:{
