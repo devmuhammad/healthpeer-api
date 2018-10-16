@@ -77,7 +77,16 @@ exports.updateMedInfo = (function (req, res){
     if (err) return res.status(500).json({status:"error", message:"DB find ERROR "});
     if (!usermed) return res.status(500).json({status:"error", message:"User Not found "});
     
-      User.findByIdAndUpdate(loggedInUser, { $set : {"usermed.medicalInfo":newMedInfo}},{new:true}, function(err,usermedupdate){
+      User.findByIdAndUpdate(loggedInUser,
+         { $set : { medicalInfo : { 
+           bp :newMedInfo.bp,
+           bloodGroup:newMedInfo.bloodGroup,
+           genotype:newMedInfo.genotype,
+           weight:newMedInfo.weight,
+           height:newMedInfo.height
+          }
+        }
+      },{new:true}, function(err,usermedupdate){
         if (err) return res.status(500).json({status:"error", message:"DB update ERROR "});
 
         res.status(200).json({ status: "success", auth:true, message:"Medical Information Updated",data:usermedupdate});
