@@ -71,31 +71,29 @@
 
 exports.updateMedInfo = (function (req, res){
     
-   newMedInfo = new medicalInfo(req.body) 
+   newMedInfo = req.body
    let loggedInUser = newMedInfo.id
    User.findById(loggedInUser, function(err, usermed) {
     if (err) return res.status(500).json({status:"error", message:"DB find ERROR "});
-    console.log(usermed)
-    if (usermed.medicalInfo) {
-      newMedInfo._id = usermed.medicalInfo
-      
-      medicalInfo.findByIdAndUpdate(usermed.medicalInfo, newMedInfo,{new:true}, function(err,usermedupdate){
+    if (!usermed) return res.status(500).json({status:"error", message:"User Not found "});
+    
+      User.findByIdAndUpdate(loggedInUser, { $set : {"usermed.medicalInfo":newMedInfo}},{new:true}, function(err,usermedupdate){
         if (err) return res.status(500).json({status:"error", message:"DB update ERROR "});
 
         res.status(200).json({ status: "success", auth:true, message:"Medical Information Updated",data:usermedupdate});
       });
-    }
-   else if (!usermed.medicalInfo){
-  newMedInfo.save( function(err,medInfo){ 
-    if (err) return res.status(500).json({status:"error", message:"There was a problem saving the info "});
-    User.findByIdAndUpdate(loggedInUser,{ $set :{medicalInfo : medInfo._id}},{new:true}, function(err,user){
-      if (err) return res.status(500).json({status:"error", message:"There was a problem updating the info"});
-      res.status(200).json({ status:"success", auth:true, message:"Medical Information Updated",data:user});
     
-    });
+//    else if (!usermed.medicalInfo){
+//   newMedInfo.save( function(err,medInfo){ 
+//     if (err) return res.status(500).json({status:"error", message:"There was a problem saving the info "});
+//     User.findByIdAndUpdate(loggedInUser,newMedInfo,{new:true}, function(err,user){
+//       if (err) return res.status(500).json({status:"error", message:"There was a problem updating the info"});
+//       res.status(200).json({ status:"success", auth:true, message:"Medical Information Updated",data:user});
     
-  });
-}
+//     });
+    
+//   });
+// }
 });
 
 });

@@ -10,6 +10,6 @@ var verrToken = require('../middleware/verrToken');
     router.delete('/delete/:userId', user_controller.deleteUser); //endpoint to delete user by Id DELETE
 
 //Medical Information Route
-    router.post('/updatemedInfo', user_controller.updateMedInfo)
+    router.put('/updatemedInfo', user_controller.updateMedInfo)
 
 module.exports = router;
