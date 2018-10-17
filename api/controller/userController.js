@@ -87,7 +87,7 @@ exports.updateMedInfo = (function (req, res){
            height:newMedInfo.height
           }
         }
-      },{new: true}, function(err,usermedupdate){
+      }, function(err,usermedupdate){
         if (err) return res.status(500).json({status:"error", message:"DB update ERROR "});
 
         res.status(200).json({ status: "success", auth:true, message:"Medical Information Updated",data:usermedupdate});
