@@ -51,7 +51,7 @@
       
        if(user){
         User.findByIdAndUpdate( user._id, req.body, {new:true}, function(err,user){
-
+          
           if (err) return res.status(500).json({status:"error", message:"There was a problem Updating user "});
           
           res.status(200).json({status:"success", message:"user updated successfully",data:user});
@@ -86,7 +86,7 @@ exports.updateMedInfo = (function (req, res){
            height:newMedInfo.height
           }
         }
-      },{new:true},{returnOriginal: false},{returnNewDocument: true}, function(err,usermedupdate){
+      },{returnOriginal: false}, function(err,usermedupdate){
         if (err) return res.status(500).json({status:"error", message:"DB update ERROR "});
 
         res.status(200).json({ status: "success", auth:true, message:"Medical Information Updated",data:usermedupdate});
