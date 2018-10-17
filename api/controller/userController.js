@@ -73,6 +73,7 @@ exports.updateMedInfo = (function (req, res){
     
    newMedInfo = req.body
    let loggedInUser = newMedInfo.id
+   console.log(newMedInfo)
    User.findById(loggedInUser, function(err, usermed) {
     if (err) return res.status(500).json({status:"error", message:"DB find ERROR "});
     if (!usermed) return res.status(500).json({status:"error", message:"User Not found "});
@@ -86,7 +87,7 @@ exports.updateMedInfo = (function (req, res){
            height:newMedInfo.height
           }
         }
-      },{returnOriginal: false}, function(err,usermedupdate){
+      },{new: true}, function(err,usermedupdate){
         if (err) return res.status(500).json({status:"error", message:"DB update ERROR "});
 
         res.status(200).json({ status: "success", auth:true, message:"Medical Information Updated",data:usermedupdate});
