@@ -85,9 +85,9 @@ exports.signedHeader = (function (req, res){
             expiresIn: 86400 // expires in 24hours
         })
         //create chatroom user
-        CREATE_USER(user._id, function(res, err){
-            if (err) return res.status(500).json({status:"error", message:"Chat acct could not be created"})
-        })
+        // CREATE_USER(user._id, function(res, err){
+        //     if (err) return res.status(500).json({status:"error", message:"Chat acct could not be created"})
+        // })
         //send registration email
         let mailtext = "<p style='font-size:24'><strong>Hello "+ user.userName +", <br> Thank You for joining us, we are glad to have you onboard <br> Login now to consult with our verified Consultants and get realtime medical advices.<br><img src='https://www.healthpeer.ng/static/img/hp-logo2.png' height='54' width='200'></img></strong></p>"
         let mailsub = "✔ Welcome To Healthpeer NG"
@@ -138,9 +138,9 @@ exports.signedHeader = (function (req, res){
             
         })
         //create chatroom user
-        CREATE_USER(user._id, function(res, err){
-            if (err) return res.status(500).json({status:"error", message:"Chat acct could not be created"})
-        })
+        // CREATE_USER(user._id, function(res, err){
+        //     if (err) return res.status(500).json({status:"error", message:"Chat acct could not be created"})
+        // })
         //send registration email
         let mailtext = "<p style='font-size:24'><strong>Hello Dr."+ user.userName +", <br> Thank You for Joining us, we are glad to have you onboard <br> You can now administer medical advices to our patient and get paid for your services. <br> Thank you and Welcome Once again <br><img src='https://www.healthpeer.ng/static/img/hp-logo2.png' height='54' width='200'></img></strong></p>"
         let mailsub = "✔ Welcome To Healthpeer NG"
