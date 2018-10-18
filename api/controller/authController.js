@@ -84,7 +84,7 @@ exports.signedHeader = (function (req, res){
            let token = jwt.sign({ id : user._id }, config.app.secret, {
             expiresIn: 86400 // expires in 24hours
         })
-        res.status(200).json({status:"success", message:" User Registered successfully",data:user});
+        
         //create chatroom user
         // CREATE_USER(user._id, function(res, err){
         //     if (err) return res.status(500).json({status:"error", message:"Chat acct could not be created"})
@@ -97,13 +97,14 @@ exports.signedHeader = (function (req, res){
         emailer.mailOptions.html =  mailtext ;
         emailer.mailOptions.subject = mailsub;
         //send reset mail
-        emailer.transporter.sendMail(emailer.mailOptions, function (err, info) {
-            if(err) { return res.status(500).json({status:"error", message:"Email could not be sent "+ err +"."}) }
-            // if (info){return res.sttaus(200).json({status:"success", message:"Email Successfully sent"})}
-            else {
-                res.status(200).json({status:"success", message:"Mail Sent & User added successfully",data:user});
-            }
-        })
+        // emailer.transporter.sendMail(emailer.mailOptions, function (err, info) {
+        //     if(err) { return res.status(500).json({status:"error", message:"Email could not be sent "+ err +"."}) }
+        //     // if (info){return res.sttaus(200).json({status:"success", message:"Email Successfully sent"})}
+        //     else {
+        //         res.status(200).json({status:"success", message:"Mail Sent & User added successfully",data:user});
+        //     }
+        // })
+        res.status(200).json({status:"success", message:" User Registered successfully",data:user});
       })
     } 
    });
