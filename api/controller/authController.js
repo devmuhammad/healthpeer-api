@@ -84,6 +84,7 @@ exports.signedHeader = (function (req, res){
            let token = jwt.sign({ id : user._id }, config.app.secret, {
             expiresIn: 86400 // expires in 24hours
         })
+        res.status(200).json({status:"success", message:" User Registered successfully",data:user});
         //create chatroom user
         // CREATE_USER(user._id, function(res, err){
         //     if (err) return res.status(500).json({status:"error", message:"Chat acct could not be created"})
