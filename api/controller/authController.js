@@ -33,7 +33,8 @@ exports.login = function (req, res){
     });
     
 };
-    //Logout Method
+    
+//Logout Method
 exports.logout = function (req, res){
     res.status(200).json({status:"success", auth: false, token: null });
 };
@@ -84,18 +85,19 @@ exports.signedHeader = (function (req, res){
            let token = jwt.sign({ id : user._id }, config.app.secret, {
             expiresIn: 86400 // expires in 24hours
         })
-        
+
+        res.status(200).json({status:"success", message:" User Registered successfully",data:user});
         //create chatroom user
         // CREATE_USER(user._id, function(res, err){
         //     if (err) return res.status(500).json({status:"error", message:"Chat acct could not be created"})
         // })
         //send registration email
-        let mailtext = "<p style='font-size:24'><strong>Hello "+ user.userName +", <br> Thank You for joining us, we are glad to have you onboard <br> Login now to consult with our verified Consultants and get realtime medical advices.<br><img src='https://www.healthpeer.ng/static/img/hp-logo2.png' height='54' width='200'></img></strong></p>"
-        let mailsub = "✔ Welcome To Healthpeer NG"
-        //mail options
-        emailer.mailOptions.to = user.email;
-        emailer.mailOptions.html =  mailtext ;
-        emailer.mailOptions.subject = mailsub;
+        // let mailtext = "<p style='font-size:24'><strong>Hello "+ user.userName +", <br> Thank You for joining us, we are glad to have you onboard <br> Login now to consult with our verified Consultants and get realtime medical advices.<br><img src='https://www.healthpeer.ng/static/img/hp-logo2.png' height='54' width='200'></img></strong></p>"
+        // let mailsub = "✔ Welcome To Healthpeer NG"
+        // //mail options
+        // emailer.mailOptions.to = user.email;
+        // emailer.mailOptions.html =  mailtext ;
+        // emailer.mailOptions.subject = mailsub;
         //send reset mail
         // emailer.transporter.sendMail(emailer.mailOptions, function (err, info) {
         //     if(err) { return res.status(500).json({status:"error", message:"Email could not be sent "+ err +"."}) }
@@ -104,17 +106,12 @@ exports.signedHeader = (function (req, res){
         //         res.status(200).json({status:"success", message:"Mail Sent & User added successfully",data:user});
         //     }
         // })
-        res.status(200).json({status:"success", message:" User Registered successfully",data:user});
+        
       })
     } 
    });
   } else if (req.body.accountType === 'Consultant'){
-      //User.schema.add({'accountType':{type:String}});
-     // User.schema.add({'balance':{type:String}});
-      //User.schema.add({'speciality':{type:String}});
-      //User.schema.add({'folioNumber':{type:String}});
-      //User.schema.add({'yofPractice':{type:String}});
-      //User.schema.add({'currentJob':{type:String}});
+    
 
       let newUser = new Consultant (req.body);
       let hashedPassword = bcrypt.hashSync(newUser.password, 8);
@@ -214,6 +211,7 @@ exports.resetPassword = function (req, res){
              });         
     });
 };
+
 //confirm password reset token
 exports.signedPassReset = function (req, res){
     
@@ -231,6 +229,7 @@ exports.signedPassReset = function (req, res){
         });
     });
 };
+
 //Password Reset Final Procedure
 exports.resetPasswordFinal = function (req, res){
         let userPassword = new User (req.body)
