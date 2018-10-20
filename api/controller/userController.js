@@ -7,7 +7,7 @@
     
  exports.userslist = function (req, res){
    
-    User.find().populate("medicalinfos","payments").exec( function(err, user) {
+    User.find().populate("payments").exec( function(err, user) {
        if (err) return res.status(500).json({status:"error", message:"DB ERROR"});
        if (!user) return res.status(401).json({status:"error", message:"No User found"}); 
         res.status(200).json({status:"success", message:"Users",data:user});
@@ -15,7 +15,7 @@
     };
   
  exports.userbyid = (function (req, res){
-    User.findById(req.params.userId).populate("medicalinfos","payments").exec (function (err, user){
+    User.findById(req.params.userId).populate("payments").exec (function (err, user){
 
       if (err) return res.status(500).json({status:"error", message:"DB ERROR"});
       if (!user) return res.status(401).json({status:"error", message:"No User found"});
@@ -77,21 +77,24 @@ exports.updateMedInfo = (function (req, res){
    User.findById(loggedInUser, function(err, usermed) {
     if (err) return res.status(500).json({status:"error", message:"DB find ERROR "});
     if (!usermed) return res.status(500).json({status:"error", message:"User Not found "});
-    
-      User.findByIdAndUpdate(loggedInUser,
-         { $set : { medicalInfo : { 
-           bp :newMedInfo.bp,
-           bloodGroup:newMedInfo.bloodGroup,
-           genotype:newMedInfo.genotype,
-           weight:newMedInfo.weight,
-           height:newMedInfo.height
-          }
-        }
-      },{upsert: true, new:true}, function(err,usermedupdate){
+      User.findAndModify({
+      query: { "_id" : loggedInUser },
+     
+      update: { $set : { medicalInfo : { 
+        bp :newMedInfo.bp,
+        bloodGroup:newMedInfo.bloodGroup,
+        genotype:newMedInfo.genotype,
+        weight:newMedInfo.weight,
+        height:newMedInfo.height
+       }
+     }
+   },
+      new : true, function(err,usermedupdate){
         if (err) return res.status(500).json({status:"error", message:"DB update ERROR "});
 
         res.status(200).json({ status: "success", auth:true, message:"Medical Information Updated",data:usermedupdate});
-      });
+      }
+    });
     
 //    else if (!usermed.medicalInfo){
 //   newMedInfo.save( function(err,medInfo){ 
