@@ -3,6 +3,7 @@
     medicalInfo =  require('../models').medicalInfo
     consultHistory =  require('../models').consultationHistory
     var verifyToken = require('../middleware/verifyToken');
+    var fs = require('fs')
     
     
  exports.userslist = function (req, res){
@@ -24,27 +25,31 @@
       });
     });
 
-
- exports.updateuserProfile = function (req, res){
-    let updtUser = req.body
-    if (updtUser.userData) {
+    exports.saveImage = function (req, res){
+      let updtUser = req.body
+    
       User.findById(updtUser.userData.userId, function(err, user){
-        if (err) return res.status(500).json({status:"error", message:"There was a problem Updating user "});
+        if (err) return res.status(500).json({status:"error", message:"There was a problem Finding user "});
         if (!user) return res.status(404).json({status:"error", message:"user not found"});
 
         if (user){
           let newImage = new User()
-          newImage.userImg.data = updtUser.userData.data
+          newImage.userImg.data = fs.readFileSync(updateUser.userData.data)
+          newImage.userImg.contentType = 'image/png';
           newImage.save( function(err,nwImage){
             if (err) return res.status(500).json({status:"error", message:"There was a problem Updating user Image "});
 
             if (nwImage){
-              res.status(200).json({status:"success", message:"user updated successfully",data:nwImage});
+              
+              res.status(200).json({status:"success", message:"user Image updated successfully",data:nwImage});
             }
           })
         }
     })
-  }else 
+    };
+
+ exports.updateuserProfile = function (req, res){
+  let updtUser = req.body
     User.findById(updtUser.id, function(err, user){
       if (err) return res.status(500).json({status:"error", message:"There was a problem Updating user "});
       if (!user) return res.status(404).json({status:"error", message:"user not found"});
