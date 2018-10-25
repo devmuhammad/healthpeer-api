@@ -27,7 +27,7 @@ exports.login = function (req, res){
              if (!passwordIsValid) return res.status(401).json({ auth: false, token: null})
         //create a token
         let token = jwt.sign({ id: user._id}, config.app.secret, {
-            expiresIn: 3600 // expires in 1hour
+            expiresIn: 86400 // expires in 1hour
         })
         res.status(200).json({status:"success", auth: true, token: token, data:user });
     });
@@ -39,21 +39,6 @@ exports.logout = function (req, res){
     res.status(200).json({status:"success", auth: false, token: null });
 };
 
-// Get logged in User with token
-exports.signedHeader = (function (req, res){
-    let myUser 
-    
-   User.findById(userId,{ password:0 }, function (err, user) {
-         if (err) return res.status(500).json({status:"error", message: "There was a problem finding the user."});
-         if (!user) return res.status(404).json({status:"error", message:"No user found."});
-         
-         res.status(200).json({ status:"success", auth:true, message:"User authorized" });
-         myUser = user.id;
-         
-     });
-      loggedUser = myUser
-       
-     });
  
  //Sign Up/Register Method
  exports.register = function (req, res){

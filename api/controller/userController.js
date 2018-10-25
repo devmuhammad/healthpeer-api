@@ -25,6 +25,22 @@
       });
     });
 
+    // Get logged in User with token
+exports.signedHeader = (function (req, res){
+  let userId = res.locals.myId
+    
+  User.findById(userId,{ password:0 }, function (err, user) {
+        if (err) return res.status(500).json({status:"error", message: "There was a problem finding the user."});
+        if (!user) return res.status(404).json({status:"error", message:"No user found."});
+        
+        res.status(200).json({ status:"success", auth:true, message:"User authorized", data: user });
+        
+        
+    });
+     
+      
+    });
+
     exports.saveImage = function (req, res){
       let userId = res.locals.myId
       let imgFile = res.locals.imgfile

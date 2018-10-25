@@ -17,7 +17,8 @@ var  multer = require('multer');
       function imageUploader (req, res, next) {
         
         upload.any();
-
+        // res.json(req.file)
+        
         res.locals.imgfile = req.file
         
 
