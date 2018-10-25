@@ -2,7 +2,7 @@ const router = require("express").Router();
 const auth_controller = require('../controller/authController');
 
 //Authentication Routes
-    router.get('/me', auth_controller.signedHeader) //endpoint for checking tokens in header GET
+    // router.get('/getAuth', auth_controller.signedHeader) //endpoint for checking tokens in header GET
 
     router.post('/login', auth_controller.login)// endpoint for login GET
 
