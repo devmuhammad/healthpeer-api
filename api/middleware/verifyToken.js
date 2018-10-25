@@ -17,7 +17,7 @@ function verifyToken (req, res, next) {
     
   });
 
-  let userId = myUser
+  res.locals.myId = myUser
 
   next()
 }

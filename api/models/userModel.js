@@ -10,7 +10,10 @@ var UserSchema = new Schema ({
     lastName:{type: String,  max: 100},
     password:{type: String, required: true, max: 100},
     dofBirth:{type: Date},
-    userImg:{ data: Buffer, contentType: String },
+    userImg:{ 
+    path: {type: String,trim: true},
+    originalname: {type: String}
+    },
     balance:{type:Number},
     state:{type: String},
     gender:{type:String},

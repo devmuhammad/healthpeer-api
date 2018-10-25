@@ -26,16 +26,32 @@
     });
 
     exports.saveImage = function (req, res){
-      let updtUser = req.body
+      let userId = res.locals.myId
+      let imgFile = res.locals.imgfile
     
-      User.findById(updtUser.userId, function(err, user){
+      User.findById(userId, function(err, user){
         if (err) return res.status(500).json({status:"error", message:"There was a problem Finding user "});
         if (!user) return res.status(404).json({status:"error", message:"user not found"});
 
-        if (user){
-          let newImage = new User()
-          newImage.userImg.data = fs.readFileSync(updtUser.data)
-          newImage.userImg.contentType = 'image/png';
+        // if (user.userImg){
+        //   // let newImage = new User(imgFile)
+          
+        //   let userImg = {};
+        //   userImg['path'] = imgFile[0].path;
+        //   userImg['originalname'] = imgFile[0].originalname;
+        //   User.findByIdAndUpdate()
+        // }
+        if (user) {
+          // let path = imgFile[0].path;
+          // let imageName = imgFile[0].originalname;    
+          let newImage = new User(imgFile)
+
+          // let userImg = {};
+          newImage.userImg['path'] = imgFile[0].path;
+          newImage.userImg['originalname'] = imgFile[0].originalname;
+
+          // newImage.userImg.data = fs.readFileSync(updtUser.data)
+          // newImage.userImg.contentType = 'image/png';
           newImage.save( function(err,nwImage){
             if (err) return res.status(500).json({status:"error", message:"There was a problem Updating user Image "});
 
