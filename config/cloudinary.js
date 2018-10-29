@@ -1,0 +1,6 @@
+
+module.exports = {
+  CLOUDINARY_API_KEY: '761769239668533',
+  CLOUDINARY_API_SECRET:'lipB4vGZldcrGcG7w8uh0pREUbo'
+    
+}

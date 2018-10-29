@@ -4,6 +4,17 @@
     consultHistory =  require('../models').consultationHistory
     var verifyToken = require('../middleware/verifyToken');
     var fs = require('fs')
+    const cloudinary = require('cloudinary');
+    const cdConfig      = require('../../config/cloudinary')
+
+cloudinary.config({
+  cloud_name: 'healthpeer-api',
+  api_key: cdConfig.CLOUDINARY_API_KEY,
+  api_secret: cdConfig.CLOUDINARY_API_SECRET,
+});
+
+const fileUpload = require('express-fileupload');
+app.use(fileUpload());
     
     
  exports.userslist = function (req, res){
@@ -59,12 +70,22 @@ exports.signedHeader = (function (req, res){
         // }
         if (user) {
           // let path = imgFile[0].path;
-          // let imageName = imgFile[0].originalname;    
-          let newImage = new User(imgFile)
+          // let imageName = imgFile[0].originalname; 
+          const newPhoto = imgFile['photo'].data.toString('base64');
+          const type = imgFile['photo'].mimetype;   
+          
 
+          cloudinary.v2.uploader.upload(`data:${type};base64,${newPhoto}`, (err, photo) => {
+            if (err) {
+              console.error(err);
+              res.status(400).send(err);
+            } else {
+              const photoUrl = photo.url;
+
+              let newImage = new User(imgFile)
           // let userImg = {};
-          newImage.userImg['path'] = imgFile[0].path;
-          newImage.userImg['originalname'] = imgFile[0].originalname;
+          newImage.userImg['path'] = photoUrl;
+          newImage.userImg['originalname'] = imgFile['photo'].name;
 
           // newImage.userImg.data = fs.readFileSync(updtUser.data)
           // newImage.userImg.contentType = 'image/png';
@@ -76,6 +97,9 @@ exports.signedHeader = (function (req, res){
               res.status(200).json({status:"success", message:"user Image updated successfully",data:nwImage});
             }
           })
+        }
+      });
+        
         }
     })
     };

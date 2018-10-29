@@ -1,4 +1,5 @@
-var  multer = require('multer');
+const  multer = require('multer');
+
     
     var storage = multer.diskStorage({
       destination: function(req, file, cb) {
@@ -9,16 +10,17 @@ var  multer = require('multer');
       }
      });
       
-     var upload = multer({
-      storage: storage
-     });
+     var upload = multer()
+    //    {
+    //   storage: storage
+    //  });
 
 
       function imageUploader (req, res, next) {
         
-        upload.any();
+        upload.single('photo');
         // res.json(req.file)
-        
+        console.log(req.file)
         res.locals.imgfile = req.file
         
 
