@@ -74,7 +74,7 @@ exports.signedHeader = (function (req, res){
       
     });
 
-    exports.saveImage = async function (req, res){
+    exports.saveImage = function async (req, res){
       let userId = res.locals.myId
       
       
