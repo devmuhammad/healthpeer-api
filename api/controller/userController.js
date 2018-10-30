@@ -78,7 +78,7 @@ exports.signedHeader = (function (req, res){
       let userId = res.locals.myId
       
       
-      User.findById(userId, function(err, user){
+      User.findById(userId, function async (err, user){
         if (err) return res.status(500).json({status:"error", message:"There was a problem Finding user "});
         if (!user) return res.status(404).json({status:"error", message:"user not found"});
 
