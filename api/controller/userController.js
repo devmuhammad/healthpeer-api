@@ -4,14 +4,39 @@
     consultHistory =  require('../models').consultationHistory
     var verifyToken = require('../middleware/verifyToken');
     var fs = require('fs')
-    const cloudinary = require('cloudinary');
-    const cdConfig      = require('../../config/cloudinary')
+    const  multer = require('multer')
+    const cloudinary = require('cloudinary')
+    const cdConfig      = require('../../config/cloudinary');
+    const imgFile = ""
 
 cloudinary.config({
   cloud_name: 'healthpeer-api',
   api_key: cdConfig.CLOUDINARY_API_KEY,
   api_secret: cdConfig.CLOUDINARY_API_SECRET,
 });
+
+ function imageUploader (req, res, next) {
+
+  var storage = multer.diskStorage({
+    destination: function(req, file, cb) {
+    cb(null, 'uploads/')
+    },
+    filename: function(req, file, cb) {
+    cb(null, file.originalname);
+    }
+   });
+    
+  var upload = multer()
+  //    {
+  //   storage: storage
+  //  });
+  
+  upload.single('photo');
+  // res.json(req.file)
+
+  console.log(req.file)
+  imgFile = req.file
+  }
 
     
  exports.userslist = function (req, res){
@@ -49,10 +74,10 @@ exports.signedHeader = (function (req, res){
       
     });
 
-    exports.saveImage = function (req, res){
+    exports.saveImage = async function (req, res){
       let userId = res.locals.myId
-      let imgFile = res.locals.imgfile
-    
+      
+      
       User.findById(userId, function(err, user){
         if (err) return res.status(500).json({status:"error", message:"There was a problem Finding user "});
         if (!user) return res.status(404).json({status:"error", message:"user not found"});
@@ -68,6 +93,8 @@ exports.signedHeader = (function (req, res){
         if (user) {
           // let path = imgFile[0].path;
           // let imageName = imgFile[0].originalname; 
+         await imageUploader(req)
+
           const newPhoto = imgFile['photo'].data.toString('base64');
           const type = imgFile['photo'].mimetype;   
           
