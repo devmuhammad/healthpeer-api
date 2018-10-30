@@ -76,9 +76,9 @@ exports.signedHeader = (function (req, res){
 
     exports.saveImage = function async (req, res){
       let userId = res.locals.myId
+      await imageUploader(req)
       
-      
-      User.findById(userId, function async (err, user){
+      User.findById(userId, function (err, user){
         if (err) return res.status(500).json({status:"error", message:"There was a problem Finding user "});
         if (!user) return res.status(404).json({status:"error", message:"user not found"});
 
@@ -93,7 +93,6 @@ exports.signedHeader = (function (req, res){
         if (user) {
           // let path = imgFile[0].path;
           // let imageName = imgFile[0].originalname; 
-         await imageUploader(req)
 
           const newPhoto = imgFile['photo'].data.toString('base64');
           const type = imgFile['photo'].mimetype;   
