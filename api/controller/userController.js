@@ -13,9 +13,6 @@ cloudinary.config({
   api_secret: cdConfig.CLOUDINARY_API_SECRET,
 });
 
-const fileUpload = require('express-fileupload');
-app.use(fileUpload());
-    
     
  exports.userslist = function (req, res){
    

@@ -9,7 +9,8 @@ const app             = require('express')()
       ,fs             = require('fs')
       ,path           = require('path')
       ,cool           = require('cool-ascii-faces')
-      ,events         = require('./events');
+      ,events         = require('./events')
+      ,fileUpload     = require('express-fileupload');
 
 // parse request to JSOn
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -32,6 +33,9 @@ io.on("connection", function(socket) {
   socket.on("fetch threads", events._fetchExistingThreads(offset,socket))
 })
 
+
+app.use(fileUpload());
+    
 
 // mongoose connection
 mongoose.Promise = global.Promise;
